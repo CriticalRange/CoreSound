@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soundcore PC</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+
+      <!-- ═══ LEFT PANEL — My Devices ═══ -->
+      <div class="devices-panel">
+
+        <header class="app-header">
+          <img class="app-logo" src="./soundcore_logo.svg" alt="soundcore" />
+        </header>
+
+        <div class="section-heading-row">
+          <h2 class="section-heading">My Devices</h2>
+          <button class="refresh-btn" id="resolveNamesBtn" title="Refresh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+        </div>
+
+        <div id="deviceCards" class="device-cards"></div>
+
+        <button class="add-device-btn" id="scanBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Device
+        </button>
+        <p id="scanState" class="scan-status"></p>
+
+        <div class="scan-overlay" id="scanOverlay" aria-hidden="true">
+          <div class="scan-overlay-header">
+            <button class="scan-overlay-back" id="scanOverlayBack" title="Back" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <div class="scan-overlay-title" id="scanOverlayTitle">Searching...</div>
+            <div class="scan-overlay-spacer"></div>
+          </div>
+
+          <div class="scan-overlay-body">
+            <div class="scan-state scan-state-searching" id="scanSearchingState">
+<div class="scan-ring scan-ring-3"></div>
+              <div class="scan-ring scan-ring-2"></div>
+              <div class="scan-ring scan-ring-1"></div>
+              <div class="scan-center-circle">
+                <img class="scan-center-logo" src="./soundcore_mark.svg" alt="soundcore" />
+              </div>
+              <p class="scan-searching-text">Searching...</p>
+            </div>
+
+            <div class="scan-state scan-state-found" id="scanFoundState" style="display:none">
+              <div class="scan-progress-wrap">
+                <div class="scan-progress-spinner"></div>
+              </div>
+              <div class="scan-results-list" id="scanResultsList"></div>
+              <button class="scan-link-btn" id="scanNotFoundBtn">Don't see your device?</button>
+            </div>
+
+            <div class="scan-state scan-state-not-found" id="scanNotFoundState" style="display:none">
+              <img class="scan-empty-img" src="./empty_com_nosearch.webp" alt="" />
+              <h3 class="scan-empty-title">Don't see your device?</h3>
+              <p class="scan-empty-desc">Make sure your device's Bluetooth is turned on and your phone is within 26 feet / 8 meters.</p>
+              <button class="scan-action-btn" id="scanRetryBtn">Retry</button>
+            </div>
+
+            <div class="scan-state scan-state-bt-off" id="scanBluetoothOffState" style="display:none">
+              <img class="scan-empty-img" src="./empty_connect_bluetooth.webp" alt="" />
+              <h3 class="scan-empty-title">Turn On Bluetooth</h3>
+              <p class="scan-empty-desc">Turn on Bluetooth to search for your soundcore devices.</p>
+              <button class="scan-action-btn" id="scanBtDoneBtn">Bluetooth Settings</button>
+            </div>
+
+            <div class="scan-state scan-state-connect-failed" id="scanConnectFailedState" style="display:none">
+              <img class="scan-empty-img" src="./empty_com_nosearch.webp" alt="" />
+              <h3 class="scan-empty-title">Connection Failed</h3>
+              <p class="scan-empty-desc">Close the Soundcore app on your phone — it keeps the connection occupied. If Multipoint is on, disconnect your phone or turn it off first, then try again.</p>
+              <button class="scan-action-btn" id="scanConnectRetryBtn">Try Again</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══ RIGHT PANEL — Device Detail ═══ -->
+      <div class="detail-panel" id="detailPanel">
+
+        <!-- No device state -->
+        <div class="no-device-state" id="noDeviceState">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2a2a2a" stroke-width="1" stroke-linecap="round">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          <p>Select a device to view settings</p>
+        </div>
+
+        <!-- Device detail (shown when connected) -->
+        <div class="device-detail" id="deviceDetail" style="display:none">
+
+          <!-- Detail header bar -->
+          <div class="detail-topbar">
+            <button class="detail-topbar-btn" id="backBtn" title="Back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <div class="detail-topbar-right">
+              <button class="detail-topbar-btn" title="Rename">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                </svg>
+              </button>
+              <button class="detail-topbar-btn" id="settingsBtn" title="Settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable body -->
+          <div class="detail-scroll">
+
+            <!-- Hero section -->
+            <div class="detail-hero">
+              <div class="hero-watermark" id="heroWatermark">5</div>
+              <img class="hero-img" src="./soundcore_logo_full.png" alt="Soundcore device" id="heroImg" />
+              <div class="hero-name-row">
+                <span class="hero-name" id="heroName">Liberty 5</span>
+                <img class="hero-ldac" src="./ldac.png" alt="LDAC" id="heroLdac" />
+              </div>
+              <div class="hero-battery-row" id="heroBatteryRow">
+                <!-- populated by JS -->
+              </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="detail-cards">
+
+              <!-- Noise Control card -->
+              <div class="detail-card" id="noiseCard">
+                <div class="detail-card-header">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.83 3.29a.2.2 0 0 1 .08.08v17.25a.2.2 0 0 1-.08.08H11.17a.2.2 0 0 1-.08-.08V3.37a.2.2 0 0 1 .08-.08h1.66zm4.27 3.37a.2.2 0 0 1 .08.08v10.5a.2.2 0 0 1-.08.08h-1.65a.2.2 0 0 1-.08-.08V6.74a.2.2 0 0 1 .08-.08h1.65zm-8.54 0a.2.2 0 0 1 .08.08v10.5a.2.2 0 0 1-.08.08H6.9a.2.2 0 0 1-.08-.08V6.74a.2.2 0 0 1 .08-.08h1.65zm12.1 3.37a.2.2 0 0 1 .08.08v3.75a.2.2 0 0 1-.08.08H19.1a.2.2 0 0 1-.08-.08v-3.75a.2.2 0 0 1 .08-.08h1.56zM2.63 10.04a.2.2 0 0 1 .08.08v3.75a.2.2 0 0 1-.08.08H.97a.2.2 0 0 1-.08-.08v-3.75a.2.2 0 0 1 .08-.08h1.66z" fill-rule="evenodd"/>
+                  </svg>
+                  <span>Noise Control</span>
+                </div>
+
+                <!-- 3 circular mode buttons -->
+                <div class="mode-circles-row">
+                  <div class="mode-circle-item">
+                    <button class="mode-circle" data-mode="anc" id="modeAnc">
+                      <!-- ANC icon -->
+                      <svg width="30" height="30" viewBox="0 0 32 32" fill="currentColor">
+                        <path d="M20.58 22.8c2.15 0 3.9 1.74 3.9 3.89v.34a.5.5 0 0 1-.5.5H8.9a.5.5 0 0 1-.5-.5v-.34c0-2.15 1.74-3.89 3.9-3.89h8.28zm-13.06-15.3C12.2 2.83 19.8 2.83 24.48 7.51c3.77 3.77 4.56 9.5 2.14 14.07l-.19.33-.56.13-1.21-.81a.3.3 0 0 1-.1-.37l.31-.56c1.86-3.63 1.22-8.14-1.76-11.11-3.73-3.73-9.79-3.73-13.52 0-3 3 -3.63 7.57-1.71 11.22l.29.57-.13.36-1.21 1.04-.68-.15c-.16-.25-.28-.46-.37-.62C2.96 17.06 3.73 11.3 7.52 7.5zm8.47 2.55c3.16 0 5.68 2.75 5.32 6.01-.27 2.47-2.26 4.47-4.72 4.75-3.23.36-5.97-2.18-5.97-5.36 0-2.98 2.4-5.4 5.37-5.4z"/>
+                      </svg>
+                    </button>
+                    <span class="mode-circle-label">Noise<br>Cancelling</span>
+                  </div>
+
+                  <div class="mode-circle-item">
+                    <button class="mode-circle" data-mode="normal" id="modeNormal">
+                      <!-- Normal icon (person, lower opacity outer ring) -->
+                      <svg width="30" height="30" viewBox="0 0 33 32" fill="currentColor">
+                        <path d="M21.08 22.8c2.15 0 3.9 1.74 3.9 3.89v.34a.5.5 0 0 1-.5.5H9.4a.5.5 0 0 1-.5-.5v-.34c0-2.15 1.74-3.89 3.9-3.89h8.28zm-4.6-12.74c3.16 0 5.68 2.75 5.32 6.01-.27 2.47-2.26 4.47-4.72 4.75-3.23.36-5.97-2.18-5.97-5.36 0-2.98 2.4-5.4 5.37-5.4z"/>
+                        <path opacity="0.3" d="M24.98 7.52c-4.69-4.69-12.28-4.69-16.97 0-3.78 3.79-4.55 9.54-2.1 14.12l.17.27.1.11 1.21-.81a.3.3 0 0 0 .1-.37l-.16-.27c-1.92-3.65-1.29-8.21 1.71-11.22 3.73-3.73 9.79-3.73 13.52 0 2.97 2.97 3.62 7.48 1.76 11.11l-.31.56a.3.3 0 0 0 .1.37l1.21.81.67-.15c.16-.25.28-.46.37-.62 2.43-4.57 1.65-10.32-2.18-13.9z"/>
+                      </svg>
+                    </button>
+                    <span class="mode-circle-label">Normal</span>
+                  </div>
+
+                  <div class="mode-circle-item">
+                    <button class="mode-circle" data-mode="transparency" id="modeTrans">
+                      <!-- Transparency icon (dotted radar) -->
+                      <svg width="30" height="30" viewBox="0 0 33 32" fill="currentColor">
+                        <path d="M16.68 10.16c3.14 0 5.64 2.73 5.29 5.97-.27 2.46-2.26 4.42-4.66 4.69-3.23.36-5.95-2.18-5.95-5.32 0-2.96 2.38-5.34 5.32-5.34zm9.43 8.7 1.47.47.1.04a.5.5 0 0 1 .29.41l.03.1-.17.47c-.15.37-.31.73-.49 1.08l-.19.35-.13.22a.5.5 0 0 1-.65.2l-1.34-.87a.5.5 0 0 1-.16-.69l.2-.37c.11-.22.21-.45.3-.68l.14-.37a.5.5 0 0 1 .6-.26zM7.99 18.99l.12.33c.17.44.38.86.63 1.27l.04.09a.5.5 0 0 1-.24.6l-1.49.93-.09.05a.5.5 0 0 1-.6-.23l-.24-.42c-.25-.46-.47-.93-.66-1.42l-.15-.4a.5.5 0 0 1 .37-.65l1.52-.44a.5.5 0 0 1 .6.29zm18.02-5.33v9.11l-.01.05a.2.2 0 0 1-.19.15h-1.5l-.05-.01-.05-.02a.2.2 0 0 1-.1-.17V13.66h1.9zm-20.75 0v9.11l-.01.05a.2.2 0 0 1-.19.15h-1.5l-.05-.01-.05-.02a.2.2 0 0 1-.1-.17V13.66h1.9zM28.8 13.67l.12.01a.5.5 0 0 1 .41.32l.03.11.08.52c.07.58.1 1.17.1 1.76l-.02.03a.5.5 0 0 1-.48.41l-1.54-.12-.12-.02a.5.5 0 0 1-.38-.37l-.01-.06v-.06c0-.36-.02-.72-.06-1.07l-.05-.35-.02-.11a.5.5 0 0 1 .36-.54l1.51-.3.12-.01zM5.42 13.34l1.67.37a.5.5 0 0 1 .38.43l-.05.34c-.06.47-.08.95-.07 1.44l-.01.11a.5.5 0 0 1-.43.41l-1.72.08a.5.5 0 0 1-.52-.45l-.01-.48c0-.51.04-1.02.1-1.52l.07-.41a.5.5 0 0 1 .59-.32zm20.58-4.67.07.07.12.15c.32.42.62.87.87 1.33l.19.35.06.11.04.11a.5.5 0 0 1-.26.56l-1.35.61-.12.05a.5.5 0 0 1-.55-.25l-.05-.09-.23-.4c-.12-.21-.25-.41-.39-.6l-.24-.33a.5.5 0 0 1 .06-.67l.08-.07 1.14-.97.1-.07a.5.5 0 0 1 .56.04zM8.08 8.34l1.19 1.05a.5.5 0 0 1 .07.65l-.25.34c-.22.3-.41.61-.59.93l-.06.09a.5.5 0 0 1-.63.18l-1.4-.68-.1-.06a.5.5 0 0 1-.17-.68l.22-.4c.23-.4.48-.78.76-1.15l.3-.39a.5.5 0 0 1 .66-.03zm13-3.37.09.01.09.03.17.07c.54.25 1.07.53 1.57.85l.42.28a.5.5 0 0 1 .15.7l-.93 1.23-.07.08a.5.5 0 0 1-.65.13l-.34-.22c-.33-.2-.66-.38-1.01-.54l-.05-.02a.5.5 0 0 1-.26-.52l.61-1.58a.5.5 0 0 1 .21-.5zm-9.93.38.63 1.62a.5.5 0 0 1-.27.63l-.36.16c-.23.11-.45.22-.67.35l-.35.21-.14.09a.5.5 0 0 1-.67-.22l-1.01-1.37-.04-.07-.04-.08a.5.5 0 0 1 .16-.65l.38-.25c.39-.24.8-.46 1.21-.65l.42-.18.09-.04a.5.5 0 0 1 .66.25zm5.58-1.28.42.04.12.01.12.02a.5.5 0 0 1 .43.36l.42 1.5a.5.5 0 0 1-.37.62l-.11.01-.43-.04c-.24-.01-.47-.02-.71-.01l-.36.01-.07.01a.5.5 0 0 1-.5-.43l-.22-1.62a.5.5 0 0 1 .39-.55l.1-.02.55-.03c.42-.01.83 0 1.24.03z"/>
+                      </svg>
+                    </button>
+                    <span class="mode-circle-label">Transparency</span>
+                  </div>
+                </div>
+
+                <!-- ANC sub panel -->
+                <div id="ancSubPanel" class="sub-expand" style="display:none">
+                  <p class="sub-expand-label">Strength</p>
+                  <div class="anc-levels">
+                    <button class="level-btn" data-anc="level1">1</button>
+                    <button class="level-btn" data-anc="level2">2</button>
+                    <button class="level-btn" data-anc="level3">3</button>
+                    <button class="level-btn" data-anc="level4">4</button>
+                    <button class="level-btn" data-anc="level5">5</button>
+                  </div>
+                  <div class="anc-level-labels"><span>Min</span><span>Max</span></div>
+                  <p class="sub-expand-label" style="margin-top:14px">Scene</p>
+                  <div class="transport-row">
+                    <button class="transport-btn" data-anc="plane">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                      Plane
+                    </button>
+                    <button class="transport-btn" data-anc="car">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                      Car
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Transparency sub panel -->
+                <div id="transSubPanel" class="sub-expand" style="display:none">
+                  <div class="toggle-row">
+                    <span class="toggle-label">Wind Noise Reduction</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="windToggle">
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <p id="modeState" class="state-hint"></p>
+              </div>
+
+              <!-- Sound Effects row -->
+              <div class="detail-card menu-row" id="soundEffectsRow">
+                <div class="menu-row-left">
+                  <div class="menu-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="m14.54 14.58.05.01a.2.2 0 0 1 .14.15l.01.06v2.02l-.01.05a.2.2 0 0 1-.15.14l-.06.01h-1.4l-.1.1v2.81l-.01.05a.2.2 0 0 1-.15.14l-.06.01-1.49-.001-.05-.007a.2.2 0 0 1-.14-.147l-.006-.057v-2.8l-.1-.1h-1.56l-.054-.008a.2.2 0 0 1-.141-.146l-.006-.058v-2.018l.008-.054a.2.2 0 0 1 .147-.14l.057-.006h4.975zM19.35 10.81v9.11l-.006.053a.2.2 0 0 1-.193.147h-1.5l-.053-.007-.048-.02a.2.2 0 0 1-.1-.173l-.001-9.11h1.9zm-12.75 0v9.11l-.006.053a.2.2 0 0 1-.193.147h-1.5l-.053-.007-.048-.02a.2.2 0 0 1-.1-.173l-.001-9.11h1.9zm6.22-6.94.054.007a.2.2 0 0 1 .14.147l.006.057-.002 9.076h-1.9l.002-9.087.007-.054a.2.2 0 0 1 .147-.14l.057-.007 1.489.001zm6.33 0 .054.007a.2.2 0 0 1 .147.193l-.001 2.81.1.101h1.42l.053.008a.2.2 0 0 1 .147.192v2.03l-.007.053a.2.2 0 0 1-.193.147h-4.986l-.053-.007a.2.2 0 0 1-.147-.193V7.14l.007-.053a.2.2 0 0 1 .193-.147h1.466l.1-.1V4.075l.008-.053a.2.2 0 0 1 .193-.147h1.5zm-12.75-.34.054.007a.2.2 0 0 1 .147.193l-.001 2.81.1.101h1.42l.053.008a.2.2 0 0 1 .147.192v2.03l-.007.053a.2.2 0 0 1-.193.147H3.132l-.053-.007a.2.2 0 0 1-.147-.193V7.14l.007-.053a.2.2 0 0 1 .193-.147h1.466l.1-.1V4.075l.008-.053a.2.2 0 0 1 .193-.147h1.5z" fill-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="menu-title">Sound Effects</div>
+                    <div class="menu-subtitle" id="eqSubtitle">soundcore Signature</div>
+                  </div>
+                </div>
+                <svg class="menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+
+              <!-- HearID row -->
+              <div class="detail-card menu-row">
+                <div class="menu-row-left">
+                  <div class="menu-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0.93c3.45 0 6.24 2.79 6.24 6.24 0 .33-.02.66-.07.98l-.06.32-.03.13-.06.25c-.05.18-.22.3-.41.29l-.08-.01-.04-.01-.99-.43a.3.3 0 0 1-.17-.26l.01-.1.03-.14.03-.17c.04-.24.06-.49.06-.74 0-2.43-1.97-4.39-4.39-4.39-2.43 0-4.39 1.96-4.39 4.39 0 .25.02.5.06.74l.04.24.04.15.04.13c.05.16-.01.33-.13.43l-.07.04-.96.47a.3.3 0 0 1-.39-.14l-.04-.08-.06-.17-.06-.22c-.13-.5-.2-1.02-.2-1.55 0-3.45 2.8-6.24 6.24-6.24zm0 3.23c1.39 0 2.52 1.08 2.61 2.45l.01.17v4.97c0 .01.01.02.01.02l.02.01 5.03.72c1.43.2 2.42 1.53 2.22 2.96a3.3 3.3 0 0 1-.49 1.27l-.09.17-3.36 6.1a.93.93 0 0 1-.74.5l-.14.01H8.23a.93.93 0 0 1-.64-.28l-.1-.1-6.74-6.94a1.46 1.46 0 0 1 0-2.07c.09-.09.18-.16.28-.22l.11-.05 3.5-1.35c.36-.14.76-.09 1.08.12l.12.09 1.86 2.02V7.78c0-1.33.98-2.43 2.27-2.6l.17-.01.17-.01zm0 1.85c-.37 0-.67.27-.73.62l-.01.09v10.64c0 .38-.31.68-.69.68-.13 0-.26-.04-.37-.12l-.09-.08-3.13-3.27c-.19-.16-.44-.22-.66-.15l-.1.04-1.72.66 5.57 5.78c.12.12.27.19.44.21l.12.01h5.79c.24 0 .47-.11.6-.31l.06-.08 2.84-5.17c.24-.44.08-.99-.37-1.23a1.3 1.3 0 0 0-.38-.11l-.11-.02-5.86-.84a.93.93 0 0 1-.79-.85l-.01-.1V6.79c0-.43-.34-.77-.76-.77z" fill-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="menu-title">HearID Sound Test</div>
+                  </div>
+                </div>
+                <svg class="menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+
+              <!-- Controls row -->
+              <div class="detail-card menu-row" id="disconnectRow">
+                <div class="menu-row-left">
+                  <div class="menu-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="menu-title">Controls</div>
+                  </div>
+                </div>
+                <svg class="menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+
+              <!-- Disconnect row -->
+              <div class="detail-card menu-row danger-row">
+                <div class="menu-row-left">
+                  <div class="menu-icon danger">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="menu-title danger-text" id="disconnectBtn">Disconnect</div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /detail-cards -->
+          </div><!-- /detail-scroll -->
+        </div><!-- /device-detail -->
+        <!-- ══ All Presets Screen ══ -->
+        <div class="se-screen" id="allPresetsScreen" style="display:none">
+          <div class="se-topbar">
+            <button class="detail-topbar-btn" id="allPresetsBackBtn" title="Back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <h2 class="se-title" id="allPresetsTitle">All Presets</h2>
+          </div>
+          <div class="se-scroll" id="allPresetsList"></div>
+        </div>
+
+        <!-- ══ Sound Effects Screen ══ -->
+        <div class="se-screen" id="soundEffectsScreen" style="display:none">
+
+          <!-- Top bar -->
+          <div class="se-topbar">
+            <button class="detail-topbar-btn" id="seBackBtn" title="Back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <h2 class="se-title">Sound Effects</h2>
+          </div>
+
+          <!-- Scrollable body -->
+          <div class="se-scroll">
+
+            <!-- Dolby Audio toggle -->
+            <div class="se-card">
+              <div class="se-toggle-row">
+                <div class="se-toggle-left">
+                  <!-- Dolby wordmark -->
+                  <div class="dolby-mark">
+                    <svg width="30" height="18" viewBox="0 0 30 18" fill="none">
+                      <rect x="0" y="0" width="13" height="18" rx="2" fill="white"/>
+                      <rect x="14" y="0" width="13" height="18" rx="2" fill="white" opacity="0.55"/>
+                      <text x="4" y="13" font-size="10" font-weight="800" fill="#1a1a1a" font-family="sans-serif">D</text>
+                      <text x="17" y="13" font-size="10" font-weight="800" fill="white" font-family="sans-serif">D</text>
+                    </svg>
+                    <div class="dolby-wordmark-text">
+                      <span class="dolby-brand">Dolby</span>
+                      <span class="dolby-sub">AUDIO</span>
+                    </div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dolbyToggle">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="se-section-label">Sounds</div>
+
+            <!-- Preference Test / HearID -->
+            <div class="se-card se-nav-row">
+              <div class="se-nav-left">
+                <div class="se-nav-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0.93c3.45 0 6.24 2.79 6.24 6.24 0 .33-.02.66-.07.98l-.06.32-.03.13-.06.25c-.05.18-.22.3-.41.29l-.08-.01-.04-.01-.99-.43a.3.3 0 0 1-.17-.26l.01-.1.03-.14.03-.17c.04-.24.06-.49.06-.74 0-2.43-1.97-4.39-4.39-4.39-2.43 0-4.39 1.96-4.39 4.39 0 .25.02.5.06.74l.04.24.04.15.04.13c.05.16-.01.33-.13.43l-.07.04-.96.47a.3.3 0 0 1-.39-.14l-.04-.08-.06-.17-.06-.22c-.13-.5-.2-1.02-.2-1.55 0-3.45 2.8-6.24 6.24-6.24zm0 3.23c1.39 0 2.52 1.08 2.61 2.45l.01.17v4.97c0 .01.01.02.01.02l.02.01 5.03.72c1.43.2 2.42 1.53 2.22 2.96a3.3 3.3 0 0 1-.49 1.27l-.09.17-3.36 6.1a.93.93 0 0 1-.74.5l-.14.01H8.23a.93.93 0 0 1-.64-.28l-.1-.1-6.74-6.94a1.46 1.46 0 0 1 0-2.07c.09-.09.18-.16.28-.22l.11-.05 3.5-1.35c.36-.14.76-.09 1.08.12l.12.09 1.86 2.02V7.78c0-1.33.98-2.43 2.27-2.6l.17-.01.17-.01zm0 1.85c-.37 0-.67.27-.73.62l-.01.09v10.64c0 .38-.31.68-.69.68-.13 0-.26-.04-.37-.12l-.09-.08-3.13-3.27c-.19-.16-.44-.22-.66-.15l-.1.04-1.72.66 5.57 5.78c.12.12.27.19.44.21l.12.01h5.79c.24 0 .47-.11.6-.31l.06-.08 2.84-5.17c.24-.44.08-.99-.37-1.23a1.3 1.3 0 0 0-.38-.11l-.11-.02-5.86-.84a.93.93 0 0 1-.79-.85l-.01-.1V6.79c0-.43-.34-.77-.76-.77z" fill-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="se-nav-title">Preference Test</div>
+                  <div class="se-nav-sub" style="color:var(--text-3)">Coming soon...</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="se-radio-btn" id="seRadioHearId"></div>
+            </div>
+
+            <!-- EQ Presets card -->
+            <div class="se-card se-presets-card">
+              <div class="se-preset-header">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;color:var(--text-2)">
+                  <path d="m14.54 14.58.05.01a.2.2 0 0 1 .14.15l.01.06v2.02l-.01.05a.2.2 0 0 1-.15.14l-.06.01h-1.4l-.1.1v2.81l-.01.05a.2.2 0 0 1-.15.14l-.06.01-1.49-.001-.05-.007a.2.2 0 0 1-.14-.147l-.006-.057v-2.8l-.1-.1h-1.56l-.054-.008a.2.2 0 0 1-.141-.146l-.006-.058v-2.018l.008-.054a.2.2 0 0 1 .147-.14l.057-.006h4.975zM19.35 10.81v9.11l-.006.053a.2.2 0 0 1-.193.147h-1.5l-.053-.007-.048-.02a.2.2 0 0 1-.1-.173l-.001-9.11h1.9zm-12.75 0v9.11l-.006.053a.2.2 0 0 1-.193.147h-1.5l-.053-.007-.048-.02a.2.2 0 0 1-.1-.173l-.001-9.11h1.9zm6.22-6.94.054.007a.2.2 0 0 1 .14.147l.006.057-.002 9.076h-1.9l.002-9.087.007-.054a.2.2 0 0 1 .147-.14l.057-.007 1.489.001zm6.33 0 .054.007a.2.2 0 0 1 .147.193l-.001 2.81.1.101h1.42l.053.008a.2.2 0 0 1 .147.192v2.03l-.007.053a.2.2 0 0 1-.193.147h-4.986l-.053-.007a.2.2 0 0 1-.147-.193V7.14l.007-.053a.2.2 0 0 1 .193-.147h1.466l.1-.1V4.075l.008-.053a.2.2 0 0 1 .193-.147h1.5zm-12.75-.34.054.007a.2.2 0 0 1 .147.193l-.001 2.81.1.101h1.42l.053.008a.2.2 0 0 1 .147.192v2.03l-.007.053a.2.2 0 0 1-.193.147H3.132l-.053-.007a.2.2 0 0 1-.147-.193V7.14l.007-.053a.2.2 0 0 1 .193-.147h1.466l.1-.1V4.075l.008-.053a.2.2 0 0 1 .193-.147h1.5z" fill-rule="evenodd"/>
+                </svg>
+                <span class="se-preset-name" id="sePresetName">Default</span>
+                <div class="se-radio-btn" id="seRadioDefault" style="margin-left:auto"></div>
+              </div>
+
+              <!-- EQ curve visualization -->
+              <div class="se-eq-curve-wrap">
+                <svg class="se-eq-curve" id="seEqCurve" viewBox="0 0 280 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="eqLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#d472f0"/>
+                      <stop offset="50%" stop-color="#9370f8"/>
+                      <stop offset="100%" stop-color="#17bfff"/>
+                    </linearGradient>
+                    <linearGradient id="eqFillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#d472f0" stop-opacity="0.18"/>
+                      <stop offset="50%" stop-color="#9370f8" stop-opacity="0.1"/>
+                      <stop offset="100%" stop-color="#17bfff" stop-opacity="0.18"/>
+                    </linearGradient>
+                    <!-- horizontal grid lines -->
+                  </defs>
+                  <line x1="0" y1="28" x2="280" y2="28" stroke="#3a3a3c" stroke-width="0.8"/>
+                  <line x1="0" y1="14" x2="280" y2="14" stroke="#2c2c2e" stroke-width="0.6"/>
+                  <line x1="0" y1="42" x2="280" y2="42" stroke="#2c2c2e" stroke-width="0.6"/>
+                  <path class="se-eq-fill" id="seEqFill" fill="url(#eqFillGrad)" stroke="none"/>
+                  <path class="se-eq-path" id="seEqPath" fill="none" stroke="url(#eqLineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <!-- Preset chips -->
+              <div class="se-preset-chips" id="sePresetChips"></div>
+
+            </div>
+
+            <!-- Custom Equalizer -->
+            <div class="se-card se-nav-row" id="customEqNavRow">
+              <div class="se-nav-left">
+                <div class="se-nav-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+                    <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+                    <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="se-nav-title">Custom Equalizer</div>
+                  <div class="se-nav-sub" id="ceqNavSub">Custom</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="se-radio-btn" id="seRadioCustom"></div>
+            </div>
+
+          </div><!-- /se-scroll -->
+        </div><!-- /soundEffectsScreen -->
+
+        <!-- ══ Custom EQ Screen ══ -->
+        <div class="ceq-screen" id="customEqScreen" style="display:none">
+
+          <div class="ceq-topbar">
+            <button class="detail-topbar-btn" id="ceqBackBtn" title="Back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <h2 class="ceq-title">Custom Equalizer</h2>
+            <button class="detail-topbar-btn" id="ceqResetBtn" title="Reset">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 .49-4.93"/>
+              </svg>
+            </button>
+            <button class="detail-topbar-btn" id="ceqRenameBtn" title="Rename">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="ceq-body">
+            <svg id="ceqSvg" class="ceq-svg" viewBox="0 0 400 248" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="ceqFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+                </linearGradient>
+              </defs>
+              <!-- static grid built by JS -->
+              <g id="ceqGrid"></g>
+              <!-- dynamic fill + curve -->
+              <path id="ceqFill" fill="url(#ceqFillGrad)" stroke="none"/>
+              <path id="ceqCurve" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- draggable handles -->
+              <g id="ceqHandles"></g>
+            </svg>
+          </div>
+
+          <div class="ceq-tabbar" id="ceqTabbar"></div>
+
+        </div><!-- /customEqScreen -->
+
+      </div><!-- /detail-panel -->
+
+    </div><!-- /app-shell -->
+
+    <!-- Custom EQ rename dialog -->
+    <div class="ceq-rename-backdrop" id="ceqRenameBackdrop">
+      <div class="ceq-rename-dialog">
+        <h2 class="ceq-rename-title">Rename Preset</h2>
+        <input class="ceq-rename-input" id="ceqRenameInput" type="text" maxlength="24" placeholder="Preset name" />
+        <div class="ceq-rename-actions">
+          <button class="ceq-rename-btn ceq-rename-cancel" id="ceqRenameCancel">Cancel</button>
+          <button class="ceq-rename-btn ceq-rename-ok" id="ceqRenameOk">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change connection confirmation dialog -->
+    <div class="confirm-backdrop" id="confirmBackdrop" aria-hidden="true">
+      <div class="confirm-dialog">
+        <h2 class="confirm-title">Switch Connection?</h2>
+        <p class="confirm-body">The current device will be disconnected.</p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn-cancel" id="confirmCancel">Cancel</button>
+          <button class="confirm-btn confirm-btn-ok" id="confirmOk">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./device-image-manifest.js"></script>
+    <script src="./device-name-aliases.js"></script>
+    <script src="./device-capabilities.js"></script>
+    <script src="./eq-presets-data.js"></script>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

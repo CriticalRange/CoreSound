@@ -1,0 +1,410 @@
+window.SOUNDCORE_DEVICE_IMAGE_MANIFEST = {
+  "a3004": {
+    "image": "./device-images/a3004.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3004_black_com_device.webp"
+  },
+  "a3005": {
+    "image": "./device-images/a3005.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3005_black_com_device.webp"
+  },
+  "a3012": {
+    "image": "./device-images/a3012.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3012_black_com_device.webp"
+  },
+  "a3025": {
+    "image": "./device-images/a3025.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3025_black_com_device.png"
+  },
+  "a3027": {
+    "image": "./device-images/a3027.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3027_img_device_common.webp"
+  },
+  "a3028": {
+    "image": "./device-images/a3028.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3028_img_device_common.webp"
+  },
+  "a3028cc": {
+    "image": "./device-images/a3028cc.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3028cc_img_device_common.webp"
+  },
+  "a3029": {
+    "image": "./device-images/a3029.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3029_img_device_common.webp"
+  },
+  "a3029xr": {
+    "image": "./device-images/a3029xr.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3029xr_img_device_common.webp"
+  },
+  "a3033": {
+    "image": "./device-images/a3033.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3033_com_device.webp"
+  },
+  "a3035": {
+    "image": "./device-images/a3035.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3035_black_com_device.webp"
+  },
+  "a3040": {
+    "image": "./device-images/a3040.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3040_black_com_device.webp"
+  },
+  "a3045": {
+    "image": "./device-images/a3045.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3045_img_device_common.webp"
+  },
+  "a3062": {
+    "image": "./device-images/a3062.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3062_black_com_device.webp"
+  },
+  "a3117": {
+    "image": "./device-images/a3117.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3117_img_device_common.webp"
+  },
+  "a3118": {
+    "image": "./device-images/a3118.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3118_img_device_common.webp"
+  },
+  "a3119": {
+    "image": "./device-images/a3119.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3119_img_device_common.webp"
+  },
+  "a3125": {
+    "image": "./device-images/a3125.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3125_img_device_common.webp"
+  },
+  "a3126": {
+    "image": "./device-images/a3126.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3126_img_device_common.webp"
+  },
+  "a3127": {
+    "image": "./device-images/a3127.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3127_img_device_common.webp"
+  },
+  "a3130": {
+    "image": "./device-images/a3130.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3130_com_device.webp"
+  },
+  "a3131": {
+    "image": "./device-images/a3131.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3131_black_com_device.webp"
+  },
+  "a3133": {
+    "image": "./device-images/a3133.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3133_black_com_device.webp"
+  },
+  "a3134": {
+    "image": "./device-images/a3134.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3134_black_com_device.webp"
+  },
+  "a3134z11": {
+    "image": "./device-images/a3134z11.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3134z11_black_com_device.webp"
+  },
+  "a3135": {
+    "image": "./device-images/a3135.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3135_com_device.png"
+  },
+  "a3136": {
+    "image": "./device-images/a3136.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3136_com_device.png"
+  },
+  "a3138": {
+    "image": "./device-images/a3138.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3138_black_com_device.png"
+  },
+  "a3148": {
+    "image": "./device-images/a3148.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3148_black_com_device.png"
+  },
+  "a3166": {
+    "image": "./device-images/a3166.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3166_black_com_device.png"
+  },
+  "a3167": {
+    "image": "./device-images/a3167.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3167_img_device_common.webp"
+  },
+  "a3171": {
+    "image": "./device-images/a3171.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3171_black_com_device.png"
+  },
+  "a3172": {
+    "image": "./device-images/a3172.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3172_black_com_device.png"
+  },
+  "a31a3": {
+    "image": "./device-images/a31a3.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a31a3_black_com_device.png"
+  },
+  "a31a3012": {
+    "image": "./device-images/a31a3012.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a31a3012_black_com_device.png"
+  },
+  "a31x1": {
+    "image": "./device-images/a31x1.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a31x1_black_com_device.png"
+  },
+  "a3301": {
+    "image": "./device-images/a3301.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3301_homepage_img_device.webp"
+  },
+  "a3302": {
+    "image": "./device-images/a3302.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3302_img_device_common.webp"
+  },
+  "a3330": {
+    "image": "./device-images/a3330.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3330_black_com_device.webp"
+  },
+  "a3331": {
+    "image": "./device-images/a3331.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3331_gray_com_device.png"
+  },
+  "a3388": {
+    "image": "./device-images/a3388.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3388_black_com_device.webp"
+  },
+  "a3390": {
+    "image": "./device-images/a3390.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3390_common_img_device.webp"
+  },
+  "a3391": {
+    "image": "./device-images/a3391.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3391_common_img_device.webp"
+  },
+  "a3392": {
+    "image": "./device-images/a3392.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3392_common_img_device.webp"
+  },
+  "a3393": {
+    "image": "./device-images/a3393.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3393_common_img_device.webp"
+  },
+  "a3395": {
+    "image": "./device-images/a3395.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3395_common_img_device.webp"
+  },
+  "a3396": {
+    "image": "./device-images/a3396.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3396_common_img_device.webp"
+  },
+  "a3398": {
+    "image": "./device-images/a3398.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3398_common_img_device.webp"
+  },
+  "a3399": {
+    "image": "./device-images/a3399.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3399_img_device.webp"
+  },
+  "a33a0": {
+    "image": "./device-images/a33a0.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a33a0_img_device_common.webp"
+  },
+  "a33a1": {
+    "image": "./device-images/a33a1.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a33a1_img_device.webp"
+  },
+  "a33a1j11": {
+    "image": "./device-images/a33a1j11.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a33a1j11_img_device.webp"
+  },
+  "a3871": {
+    "image": "./device-images/a3871.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3871_black_com_device.webp"
+  },
+  "a3873": {
+    "image": "./device-images/a3873.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3873_black_com_device.webp"
+  },
+  "a3874": {
+    "image": "./device-images/a3874.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3874_black_com_device.png"
+  },
+  "a3875": {
+    "image": "./device-images/a3875.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3875_black_com_device.webp"
+  },
+  "a3876": {
+    "image": "./device-images/a3876.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3876_black_com_device.png"
+  },
+  "a3878": {
+    "image": "./device-images/a3878.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3878_white_com_device.webp"
+  },
+  "a3909": {
+    "image": "./device-images/a3909.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3909_common_img_device.webp"
+  },
+  "a3910": {
+    "image": "./device-images/a3910.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3910_common_img_device.webp"
+  },
+  "a3913": {
+    "image": "./device-images/a3913.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3913_common_img_device.webp"
+  },
+  "a3926": {
+    "image": "./device-images/a3926.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3926_home_img_device.webp"
+  },
+  "a3927": {
+    "image": "./device-images/a3927.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3927_black_com_device.webp"
+  },
+  "a3930": {
+    "image": "./device-images/a3930.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3930_img_device_common.webp"
+  },
+  "a3931": {
+    "image": "./device-images/a3931.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3931_img_device_common.webp"
+  },
+  "a3931xr": {
+    "image": "./device-images/a3931xr.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3931xr_img_device_common.webp"
+  },
+  "a3933": {
+    "image": "./device-images/a3933.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3933_black_com_device.webp"
+  },
+  "a3935": {
+    "image": "./device-images/a3935.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3935_img_device_common.webp"
+  },
+  "a3936": {
+    "image": "./device-images/a3936.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3936_black_com_device.webp"
+  },
+  "a3937": {
+    "image": "./device-images/a3937.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3937_black_com_device.webp"
+  },
+  "a3939": {
+    "image": "./device-images/a3939.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3939_black_com_device.webp"
+  },
+  "a3943": {
+    "image": "./device-images/a3943.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3943_black_com_device.webp"
+  },
+  "a3944": {
+    "image": "./device-images/a3944.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3944_black_com_device.webp"
+  },
+  "a3945": {
+    "image": "./device-images/a3945.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3945_black_com_device.webp"
+  },
+  "a3947": {
+    "image": "./device-images/a3947.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3947_black_com_device.webp"
+  },
+  "a3948": {
+    "image": "./device-images/a3948.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3948_black_com_device.webp"
+  },
+  "a3949": {
+    "image": "./device-images/a3949.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3949_black_com_device.webp"
+  },
+  "a3951": {
+    "image": "./device-images/a3951.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3951_img_device_common.webp"
+  },
+  "a3952": {
+    "image": "./device-images/a3952.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3952_black_com_device.png"
+  },
+  "a3953": {
+    "image": "./device-images/a3953.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3953_black_com_device.webp"
+  },
+  "a3954": {
+    "image": "./device-images/a3954.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3954_black_com_device.webp"
+  },
+  "a3955": {
+    "image": "./device-images/a3955.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3955_black_com_device.webp"
+  },
+  "a3957": {
+    "image": "./device-images/a3957.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3957_black_com_device.webp"
+  },
+  "a3958": {
+    "image": "./device-images/a3958.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3958_black_com_device.webp"
+  },
+  "a3959": {
+    "image": "./device-images/a3959.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3959_black_com_device.webp"
+  },
+  "a3961": {
+    "image": "./device-images/a3961.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3961_com_device.webp"
+  },
+  "a3968": {
+    "image": "./device-images/a3968.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3968_black_com_device.webp"
+  },
+  "a3982": {
+    "image": "./device-images/a3982.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3982_black_com_device.webp"
+  },
+  "a3983": {
+    "image": "./device-images/a3983.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3983_black_com_device.png"
+  },
+  "a3994": {
+    "image": "./device-images/a3994.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a3994_black_com_device.webp"
+  },
+  "a6610": {
+    "image": "./device-images/a6610.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/a6610_white_com_device.webp"
+  },
+  "d1101": {
+    "image": "./device-images/d1101.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1101_black_com_device.webp"
+  },
+  "d1200": {
+    "image": "./device-images/d1200.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1200_black_com_device.webp"
+  },
+  "d1202": {
+    "image": "./device-images/d1202.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1202_black_com_device.png"
+  },
+  "d1301": {
+    "image": "./device-images/d1301.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1301_white_com_device.webp"
+  },
+  "d1301s": {
+    "image": "./device-images/d1301s.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1301s_white_com_device.webp"
+  },
+  "d1402": {
+    "image": "./device-images/d1402.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/d1402_black_com_device.png"
+  },
+  "d3200": {
+    "image": "./device-images/d3200.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/d3200_black_com_device.png"
+  },
+  "d5100": {
+    "image": "./device-images/d5100.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/d5100_black_com_device.webp"
+  },
+  "d5103": {
+    "image": "./device-images/d5103.png",
+    "source": "apk_extracted/res/drawable-xxhdpi/d5103_black_com_device.png"
+  },
+  "z5180": {
+    "image": "./device-images/z5180.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/z5180_img_device.webp"
+  },
+  "z6111": {
+    "image": "./device-images/z6111.webp",
+    "source": "apk_extracted/res/drawable-xxhdpi/z6111_img_device.webp"
+  }
+};

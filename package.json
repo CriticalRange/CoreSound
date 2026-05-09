@@ -1,0 +1,17 @@
+{
+  "name": "soundcore-pc",
+  "version": "0.1.0",
+  "description": "Desktop MVP inspired by Soundcore Android app",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "dbus-next": "^0.10.2"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}

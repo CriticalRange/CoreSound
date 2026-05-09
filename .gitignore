@@ -1,0 +1,14 @@
+node_modules/
+analysis/
+apk_extracted/
+docs/
+scripts/
+tools/
+config/
+*.zip
+*.jar
+*.xz
+*.apk
+bugreport*/
+reverse_workflow.md
+.codex
