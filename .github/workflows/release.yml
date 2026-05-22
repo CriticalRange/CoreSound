@@ -19,10 +19,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npm install
+        run: npm install
 
       - name: Build AppImage
-        run: GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npx electron-builder --linux --publish never
+        run: DEBUG=electron-builder npx electron-builder --linux --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -46,10 +46,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npm install
+        run: npm install
 
       - name: Build Windows zip
-        run: GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npx electron-builder --win --publish never
+        run: DEBUG=electron-builder npx electron-builder --win --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
