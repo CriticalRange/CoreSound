@@ -1,9 +1,9 @@
 
 /**
- * Soundcore EQ Preset Mappings with Official Asset Paths
+ * EQ Preset Mappings
  */
 export const EQ_PRESETS = [
-  { id: 0,  name: "soundcore Signature", key: "a3909_eq_signature", img: "a3909_eq_image_default.webp", img_color: "a3909_eq_image_default_color.webp" },
+  { id: 0,  name: "Signature", key: "a3909_eq_signature", img: "a3909_eq_image_default.webp", img_color: "a3909_eq_image_default_color.webp" },
   { id: 1,  name: "Acoustic",            key: "a3909_eq_acoustic",  img: "a3909_eq_image_acoustic.png",   img_color: "a3909_eq_image_acoustic_color.webp" },
   { id: 2,  name: "Bass Booster",       key: "a3909_eq_bass_boost", img: "a3909_eq_image_bassbooster.webp", img_color: "a3909_eq_image_bassbooster_color.webp" },
   { id: 3,  name: "Bass Reducer",       key: "a3909_eq_bass_reducer", img: "a3909_eq_image_bassreducer.webp", img_color: "a3909_eq_image_bassreducer_color.webp" },

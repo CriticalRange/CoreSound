@@ -52,7 +52,7 @@ Name resolution note:
 
 ## Bluetooth connection flow
 
-1. Renderer calls `window.soundcoreDesktop.bluetooth.scan()`.
+1. Renderer calls `window.coresound.bluetooth.scan()`.
 2. Main process starts a Bluetooth scan and returns discovered devices.
 3. Clicking a device calls `connect(deviceId)` through IPC.
 4. Main process connects and discovers services.
@@ -60,8 +60,8 @@ Name resolution note:
 
 ## Command profile
 
-- The app can load profile mappings from `config/soundcore-command-profile.json`.
-- Example template: `config/soundcore-command-profile.example.json`
+- The app can load profile mappings from `config/command-profile.json`.
+- Example template: `config/command-profile.example.json`
 - Required per command:
   - `serviceUuid`
   - `characteristicUuid`

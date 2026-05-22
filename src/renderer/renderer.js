@@ -166,7 +166,7 @@ const refs = {
   allPresetsList:     $("allPresetsList"),
 };
 
-const EQ_PRESETS = window.SOUNDCORE_EQ_PRESETS || [];
+const EQ_PRESETS = window.CORESOUND_EQ_PRESETS || [];
 
 function buildEqCurvePath(bands) {
   const W = 280, H = 56, flat = 120, span = 70;
@@ -379,8 +379,8 @@ const ANC_LABELS = {
   plane:  "Plane",         car:    "Car"
 };
 
-const DEVICE_IMAGE_MANIFEST = window.SOUNDCORE_DEVICE_IMAGE_MANIFEST || {};
-const DEVICE_NAME_ALIASES = window.SOUNDCORE_DEVICE_NAME_ALIASES || {};
+const DEVICE_IMAGE_MANIFEST = window.CORESOUND_DEVICE_IMAGE_MANIFEST || {};
+const DEVICE_NAME_ALIASES = window.CORESOUND_DEVICE_NAME_ALIASES || {};
 const APK_CODE_NAME_MAP = window.APK_CODE_NAME_MAP || {};
 const DEVICE_IMAGE_FALLBACK = "";
 const DEVICE_ALIAS_KEYS = Object.keys(DEVICE_NAME_ALIASES).sort((a, b) => b.length - a.length);

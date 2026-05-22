@@ -1,4 +1,4 @@
-window.SOUNDCORE_DEVICE_IMAGE_MANIFEST = {
+window.CORESOUND_DEVICE_IMAGE_MANIFEST = {
   "a3004": {
     "image": "./device-images/a3004.webp",
     "source": "apk_extracted/res/drawable-xxhdpi/a3004_black_com_device.webp"

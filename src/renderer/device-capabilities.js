@@ -1,4 +1,4 @@
-// Per-model feature capabilities for Soundcore devices.
+// Per-model feature capabilities for supported devices.
 // Keys are model codes matched by extractModelCode().
 // Any device not listed falls back to FALLBACK_CAPS.
 

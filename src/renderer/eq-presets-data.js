@@ -1,5 +1,5 @@
 
-window.SOUNDCORE_EQ_PRESETS = [
+window.CORESOUND_EQ_PRESETS = [
   { id: 0,  name: "Signature", img: "a3909_eq_image_default.webp",       img_color: "a3909_eq_image_default_color.webp",       bands: [120,120,120,120,120,120,120,120] },
   { id: 1,  name: "Acoustic",            img: "a3909_eq_image_acoustic.png",        img_color: "a3909_eq_image_acoustic_color.webp",       bands: [160,130,140,140,160,160,160,140] },
   { id: 2,  name: "Bass Booster",        img: "a3909_eq_image_bassbooster.webp",    img_color: "a3909_eq_image_bassbooster_color.webp",    bands: [160,150,130,120,120,120,120,120] },

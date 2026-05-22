@@ -1,4 +1,4 @@
-window.SOUNDCORE_DEVICE_NAME_ALIASES = {
+window.CORESOUND_DEVICE_NAME_ALIASES = {
   "a20i": "a3948",
   "a25i": "a3948",
   "a3004": "a3004",
