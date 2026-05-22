@@ -8,7 +8,7 @@
     "dist:linux": "electron-builder --linux",
     "dist:win": "electron-builder --win"
   },
-  "author": "",
+  "author": "CriticalRange",
   "license": "GPL-3.0-only",
   "dependencies": {
     "dbus-next": "^0.10.2",
