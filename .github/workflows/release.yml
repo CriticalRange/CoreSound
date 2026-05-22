@@ -20,6 +20,8 @@ jobs:
 
       - name: Build AppImage
         run: npx electron-builder --linux --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload AppImage
         uses: softprops/action-gh-release@v2
@@ -43,6 +45,8 @@ jobs:
 
       - name: Build Windows zip
         run: npx electron-builder --win --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows zip
         uses: softprops/action-gh-release@v2
