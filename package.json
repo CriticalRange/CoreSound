@@ -48,7 +48,8 @@
           ]
         }
       ],
-      "icon": "src/renderer/assets/linux-icons"
+      "icon": "src/renderer/assets/linux-icons",
+      "category": "AudioVideo"
     },
     "nsis": {
       "oneClick": true,
