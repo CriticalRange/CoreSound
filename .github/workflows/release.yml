@@ -1,0 +1,48 @@
+name: Build and Upload Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build AppImage
+        run: npm run dist:linux
+
+      - name: Upload AppImage
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.AppImage
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Windows zip
+        run: npm run dist:win
+
+      - name: Upload Windows zip
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip

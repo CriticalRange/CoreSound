@@ -3,6 +3,10 @@ const { Variant } = dbus;
 const { spawn } = require('child_process');
 const path = require('path');
 const { EventEmitter } = require('events');
+
+function resolveUnpacked(filePath) {
+  return filePath.replace('app.asar', 'app.asar.unpacked');
+}
 const { buildDeviceInfoQuery, parseSoundcoreFrames, extractMode } = require('./soundcore-protocol');
 
 function variantValue(v, fallback = null) {
@@ -204,7 +208,7 @@ class BluezBackend extends EventEmitter {
   // Open RFCOMM connection via Python helper subprocess
   _openRfcomm(mac, channel = 15) {
     return new Promise((resolve, reject) => {
-      const helperPath = path.join(__dirname, 'rfcomm-helper.py');
+      const helperPath = resolveUnpacked(path.join(__dirname, 'rfcomm-helper.py'));
       const proc = spawn('python3', [helperPath, mac, String(channel)], {
         stdio: ['pipe', 'pipe', 'pipe']
       });
@@ -438,7 +442,7 @@ class BluezBackend extends EventEmitter {
     const channel = this._legacyBatteryChannel;
 
     try {
-      const helperPath = path.join(__dirname, 'rfcomm-helper.py');
+      const helperPath = resolveUnpacked(path.join(__dirname, 'rfcomm-helper.py'));
       const proc = spawn('python3', [helperPath, mac, String(channel)], {
         stdio: ['pipe', 'pipe', 'pipe']
       });

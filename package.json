@@ -25,6 +25,9 @@
       "src/**/*",
       "package.json"
     ],
+    "asarUnpack": [
+      "src/rfcomm-helper.py"
+    ],
     "win": {
       "target": [
         {
