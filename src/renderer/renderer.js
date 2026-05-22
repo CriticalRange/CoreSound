@@ -226,7 +226,7 @@ async function selectPreset(id) {
   saveState();
   renderSoundEffects();
   renderAllPresets();
-  try { await window.soundcoreDesktop.bluetooth.sendEqCommand(id); }
+  try { await window.coresound.bluetooth.sendEqCommand(id); }
   catch (err) { console.error("EQ command failed:", err); }
 }
 
@@ -442,7 +442,7 @@ function resolveDeviceVisualName(device) {
 
 function loadState() {
   try {
-    const p = JSON.parse(localStorage.getItem("soundcore-pc-state") || "{}");
+    const p = JSON.parse(localStorage.getItem("coresound-state") || "{}");
     if (p.mode)              state.mode        = p.mode;
     if (p.ancScene)          state.ancScene    = p.ancScene;
     if (p.windEnabled != null) state.windEnabled = p.windEnabled;
@@ -468,7 +468,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem("soundcore-pc-state", JSON.stringify({
+  localStorage.setItem("coresound-state", JSON.stringify({
     mode: state.mode, ancScene: state.ancScene,
     windEnabled: state.windEnabled, eq: state.eq, profile: state.profile,
     presetOrder: state.presetOrder,
@@ -734,7 +734,7 @@ async function connectDevice(device, options = {}) {
     const confirmed = await confirmChangeConnection();
     if (!confirmed) return;
     const previousConnectedId = state.connectedDeviceId;
-    try { await window.soundcoreDesktop.bluetooth.disconnectSession(); } catch {}
+    try { await window.coresound.bluetooth.disconnectSession(); } catch {}
     state.connectedDeviceId = null;
     if (state.activeDeviceId === previousConnectedId) {
       state.activeDeviceId = null;
@@ -746,7 +746,7 @@ async function connectDevice(device, options = {}) {
   state.scanState = `Connecting to ${device.name}…`;
   render();
   try {
-    const result = await window.soundcoreDesktop.bluetooth.connect(device.id);
+    const result = await window.coresound.bluetooth.connect(device.id);
     state.connectedDeviceId = device.id;
     state.lastConnectedDeviceId = device.id;
     if (openOnSuccess) state.activeDeviceId = device.id;
@@ -767,7 +767,7 @@ async function connectDevice(device, options = {}) {
     let polls = 0;
     const pollId = setInterval(async () => {
       if (++polls > 20 || state.connectedDeviceId !== device.id) { clearInterval(pollId); return; }
-      const batt = await window.soundcoreDesktop.bluetooth.getBattery().catch(() => null);
+      const batt = await window.coresound.bluetooth.getBattery().catch(() => null);
       if (hasAnyBatteryValue(batt)) {
         clearInterval(pollId);
         state.devices = state.devices.map(d =>
@@ -803,7 +803,7 @@ async function removeDevice(deviceId) {
   if (!target) return;
 
   if (state.connectedDeviceId === deviceId || state.connectingDeviceId === deviceId) {
-    try { await window.soundcoreDesktop.bluetooth.disconnectSession(); } catch {}
+    try { await window.coresound.bluetooth.disconnectSession(); } catch {}
     state.connectedDeviceId = null;
     state.connectingDeviceId = null;
   }
@@ -819,7 +819,7 @@ async function removeDevice(deviceId) {
 async function syncConnectedDevice(options = {}) {
   const { addIfMissing = false } = options;
   try {
-    const connected = await window.soundcoreDesktop.bluetooth.getConnectedDevice();
+    const connected = await window.coresound.bluetooth.getConnectedDevice();
     if (!connected) {
       state.connectedDeviceId = null;
       saveState();
@@ -845,7 +845,7 @@ async function runDeviceScanOverlayFlow() {
   render();
 
   try {
-    const adapterState = await window.soundcoreDesktop.bluetooth.getState();
+    const adapterState = await window.coresound.bluetooth.getState();
     if (adapterState !== "poweredOn") {
       state.scanState = `Bluetooth is ${adapterState}. Turn it on.`;
       state.scanOverlayMode = "bluetooth-off";
@@ -857,7 +857,7 @@ async function runDeviceScanOverlayFlow() {
     state.scanOverlayMode = "searching";
     render();
 
-    const devices = await window.soundcoreDesktop.bluetooth.getConnectedDevices();
+    const devices = await window.coresound.bluetooth.getConnectedDevices();
     state.scanResults = mergeDevices([], devices).filter(shouldShowScanResultDevice);
     await syncConnectedDevice({ addIfMissing: false });
     state.scanState = `Found ${state.scanResults.length} connected device(s)`;
@@ -874,14 +874,14 @@ async function runDeviceScanOverlayFlow() {
 
 function bindControls() {
   if (state.profile) {
-    window.soundcoreDesktop.bluetooth.updateProfile(state.profile).catch(err => {
+    window.coresound.bluetooth.updateProfile(state.profile).catch(err => {
       state.scanState = `Profile load failed: ${err.message}`;
       renderScanState();
     });
   }
 
   async function sendMode() {
-    await window.soundcoreDesktop.bluetooth.sendModeCommand(state.mode, state.ancScene, state.windEnabled);
+    await window.coresound.bluetooth.sendModeCommand(state.mode, state.ancScene, state.windEnabled);
   }
 
   // Circular mode buttons
@@ -939,7 +939,7 @@ function bindControls() {
   if (refs.dolbyToggle) {
     refs.dolbyToggle.addEventListener("change", () => {
       state.dolbyEnabled = refs.dolbyToggle.checked;
-      window.soundcoreDesktop.bluetooth.sendDolbyCommand(refs.dolbyToggle.checked, state.eq);
+      window.coresound.bluetooth.sendDolbyCommand(refs.dolbyToggle.checked, state.eq);
     });
   }
 
@@ -963,7 +963,7 @@ function bindControls() {
     }
     state.scanState = "Resolving name…"; renderScanState();
     try {
-      const result = await window.soundcoreDesktop.bluetooth.resolveConnectedName();
+      const result = await window.coresound.bluetooth.resolveConnectedName();
       if (result?.name) {
         state.devices = state.devices.map(d => d.id === result.id ? { ...d, name: result.name } : d);
         saveState();
@@ -977,7 +977,7 @@ function bindControls() {
   if (refs.disconnectBtn) {
     refs.disconnectBtn.onclick = async () => {
       try {
-        await window.soundcoreDesktop.bluetooth.disconnectSession();
+        await window.coresound.bluetooth.disconnectSession();
         state.connectedDeviceId = null;
         state.connectingDeviceId = null;
         state.activeDeviceId = null;
@@ -992,7 +992,7 @@ function bindControls() {
   if (refs.backBtn) {
     refs.backBtn.onclick = async () => {
       if (state.connectedDeviceId) {
-        try { await window.soundcoreDesktop.bluetooth.disconnectSession(); } catch {}
+        try { await window.coresound.bluetooth.disconnectSession(); } catch {}
         state.connectedDeviceId = null;
       }
       state.connectingDeviceId = null;
@@ -1030,7 +1030,7 @@ function bindControls() {
   }
   if (refs.scanBtDoneBtn) {
     refs.scanBtDoneBtn.onclick = () => {
-      window.soundcoreDesktop.bluetooth.openBtSettings().catch(() => {});
+      window.coresound.bluetooth.openBtSettings().catch(() => {});
       state.scanOverlayOpen = false;
       renderScanOverlay();
     };
@@ -1167,7 +1167,7 @@ async function sendCeqBands(bands) {
   state.eq = -1;
   saveState();
   try {
-    await window.soundcoreDesktop.bluetooth.sendEqCommand("custom", bands);
+    await window.coresound.bluetooth.sendEqCommand("custom", bands);
   } catch (err) {
     console.error("Custom EQ send failed:", err);
   }
@@ -1353,7 +1353,7 @@ async function boot() {
 
 boot();
 
-window.soundcoreDesktop.bluetooth.onBattery((payload) => {
+window.coresound.bluetooth.onBattery((payload) => {
   const batt = payload?.battery || payload;
   const targetId = payload?.deviceId || state.connectedDeviceId;
   if (!targetId || !hasAnyBatteryValue(batt)) return;
@@ -1364,7 +1364,7 @@ window.soundcoreDesktop.bluetooth.onBattery((payload) => {
   render();
 });
 
-window.soundcoreDesktop.bluetooth.onModeUpdate(({ mode, ancScene, windEnabled }) => {
+window.coresound.bluetooth.onModeUpdate(({ mode, ancScene, windEnabled }) => {
   state.mode = mode;
   state.ancScene = ancScene;
   state.windEnabled = windEnabled;

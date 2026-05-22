@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("soundcoreDesktop", {
+contextBridge.exposeInMainWorld("coresound", {
   platform: process.platform,
   bluetooth: {
     getState: () => ipcRenderer.invoke("ble:get-state"),
