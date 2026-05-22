@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("soundcoreDesktop", {
   bluetooth: {
     getState: () => ipcRenderer.invoke("ble:get-state"),
     scan: () => ipcRenderer.invoke("ble:scan"),
+    getConnectedDevices: () => ipcRenderer.invoke("ble:get-connected-devices"),
     connect: (deviceId) => ipcRenderer.invoke("ble:connect", deviceId),
     disconnectSession: () => ipcRenderer.invoke("ble:disconnect-session"),
     disconnect: () => ipcRenderer.invoke("ble:disconnect"),

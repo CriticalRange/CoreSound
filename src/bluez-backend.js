@@ -19,6 +19,10 @@ function normalizeUuid(uuid = '') {
   return String(uuid).toLowerCase().replace(/-/g, '');
 }
 
+function normalizeDeviceId(id = '') {
+  return String(id).trim().toUpperCase();
+}
+
 class BluezBackend extends EventEmitter {
   constructor() {
     super();
@@ -61,9 +65,9 @@ class BluezBackend extends EventEmitter {
 
   _deviceIdFromProps(p, props = {}) {
     const addr = variantValue(props.Address, null);
-    if (addr) return addr;
+    if (addr) return normalizeDeviceId(addr);
     const m = /dev_(.*)$/.exec(p);
-    return m ? m[1].replace(/_/g, ':') : p;
+    return m ? normalizeDeviceId(m[1].replace(/_/g, ':')) : p;
   }
 
   _deviceNameFromProps(props = {}) {
@@ -132,6 +136,13 @@ class BluezBackend extends EventEmitter {
     await adapter.StopDiscovery();
     const devices = await this._refreshDevices();
     return Array.from(devices.values()).map(({ path: _p, ...d }) => d);
+  }
+
+  async getConnectedDevices() {
+    const devices = await this._refreshDevices();
+    return Array.from(devices.values())
+      .filter((d) => d && d.connected)
+      .map(({ path: _p, ...d }) => d);
   }
 
   async _resolveDevice(deviceId) {

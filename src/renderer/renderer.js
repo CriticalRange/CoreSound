@@ -23,24 +23,23 @@ const state = {
   activeCustomId:    null,
 };
 
-// ── Battery SVG icons ────────────────────────────────────────────────────────
+const supportsDiscreteDisplayTransition = Boolean(
+  globalThis.CSS?.supports?.("transition-behavior: allow-discrete") &&
+  ("CSSStartingStyleRule" in globalThis)
+);
+let detailFirstOpenAnimated = false;
 
-const ICON_BATT_L = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-  <rect x="6" y="5" width="9" height="14" rx="2"/>
-  <line x1="9" y1="5" x2="9" y2="3"/><line x1="12" y1="5" x2="12" y2="3"/>
-  <line x1="4" y1="10" x2="6" y2="10"/>
-</svg>`;
+function setViewOpen(el, open) {
+  if (!el) return;
+  el.classList.toggle("is-open", Boolean(open));
+  el.setAttribute("aria-hidden", open ? "false" : "true");
+}
 
-const ICON_BATT_R = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-  <rect x="9" y="5" width="9" height="14" rx="2"/>
-  <line x1="12" y1="5" x2="12" y2="3"/><line x1="15" y1="5" x2="15" y2="3"/>
-  <line x1="18" y1="10" x2="20" y2="10"/>
-</svg>`;
+// ── Battery icons (Lucide) ───────────────────────────────────────────────────
 
-const ICON_BATT_CASE = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-  <rect x="3" y="8" width="18" height="12" rx="3"/>
-  <path d="M8 8V6a4 4 0 0 1 8 0v2"/>
-</svg>`;
+const ICON_BATT_L = `<i data-lucide="battery-medium" aria-hidden="true"></i>`;
+const ICON_BATT_R = `<i data-lucide="battery-medium" aria-hidden="true"></i>`;
+const ICON_BATT_CASE = `<i data-lucide="battery-charging" aria-hidden="true"></i>`;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -86,9 +85,8 @@ function batteryRowHTML(device, hero = false) {
 
 function deviceCardHTML(device, isActive, isConnected, isConnecting) {
   const connected = isConnected;
-  const imgOpacity = connected ? "" : ' style="opacity:0.3"';
   const shortId = (device.id || "").slice(-8);
-  const imgSrc = resolveDeviceImage(device);
+  const visualName = resolveDeviceVisualName(device);
   const batteryClass = isSingleBatteryDevice(device) ? "card-battery-row single" : "card-battery-row";
   const statusLabel = isConnecting ? "Connecting..." : (connected ? "Connected" : "Available");
   const statusIcon = isConnecting
@@ -97,16 +95,18 @@ function deviceCardHTML(device, isActive, isConnected, isConnecting) {
 
   return `
     <div class="${batteryClass}">
-      ${batteryRowHTML(device, false)}
-    </div>
-    <div class="card-body">
-      <img class="card-device-img" src="${imgSrc}"${imgOpacity} alt="${device.name}" />
-      <div class="card-device-info">
-        <div class="card-device-name">${device.name || "Unknown"}</div>
-        <div class="card-status">
+      <div class="card-label-status">
+        <div class="card-device-label" data-label="${visualName}" aria-hidden="true">${visualName}</div>
+        <div class="card-status card-status-inline">
           ${statusIcon}
           <span>${statusLabel}</span>
         </div>
+      </div>
+      ${batteryRowHTML(device, false)}
+    </div>
+    <div class="card-body">
+      <div class="card-device-info">
+        <div class="card-device-name">${device.name || "Unknown"}</div>
         <button class="card-remove-btn" data-action="remove" title="Remove device">
           Remove Device
         </button>
@@ -184,10 +184,45 @@ function buildEqCurvePath(bands) {
   return { line, fill };
 }
 
+const PRESET_GRADIENT_BY_COLOR_ASSET = {
+  "a3909_eq_image_acoustic_color.webp":      ["#D09864", "#DAAE6E", "#E2C177"],
+  "a3909_eq_image_bassbooster_color.webp":   ["#3064E8", "#6162E8", "#9360E7"],
+  "a3909_eq_image_bassreducer_color.webp":   ["#03D1DA", "#02A0E8", "#016FF6"],
+  "a3909_eq_image_classical_color.webp":     ["#3E3835", "#7B5D40", "#B9814B"],
+  "a3909_eq_image_custom_color.webp":        ["#02E4CE", "#08AADB", "#0E6FE7"],
+  "a3909_eq_image_dance_color.webp":         ["#7F32D2", "#AB36B1", "#D83B90"],
+  "a3909_eq_image_deep_color.webp":          ["#41C0FE", "#2AA1FE", "#1284FE"],
+  "a3909_eq_image_default_color.webp":       ["#DA50D5", "#9A49E2", "#5A41EF"],
+  "a3909_eq_image_electronic_color.webp":    ["#D36FCA", "#9B58C3", "#6241BD"],
+  "a3909_eq_image_flat_color.webp":          ["#2B85F2", "#3AA9EC", "#49CCE6"],
+  "a3909_eq_image_grammy_color.webp":        ["#E68755", "#EBA05E", "#EFB965"],
+  "a3909_eq_image_hearid_color.webp":        ["#339DFD", "#618EFE", "#8275FE"],
+  "a3909_eq_image_hiphop_color.webp":        ["#FE7906", "#FC9211", "#F9AC1A"],
+  "a3909_eq_image_jazz_color.webp":          ["#4A82C6", "#7494B8", "#9EA6AB"],
+  "a3909_eq_image_latin_color.webp":         ["#BE9A6E", "#AA7F5C", "#966549"],
+  "a3909_eq_image_lounge_color.webp":        ["#7DBBEA", "#A5BAC4", "#CEBA9C"],
+  "a3909_eq_image_piano_color.webp":         ["#CBAA86", "#8B7258", "#4B3A2A"],
+  "a3909_eq_image_pop_color.webp":           ["#CF2698", "#7C67C1", "#2AA9EA"],
+  "a3909_eq_image_preset_color.webp":        ["#D7CAF9", "#D0A0F6", "#CA72DC"],
+  "a3909_eq_image_rb_color.webp":            ["#02ABFB", "#0286FB", "#0162FB"],
+  "a3909_eq_image_rock_color.webp":          ["#951681", "#D8195A", "#FF1944"],
+  "a3909_eq_image_smallspeaker_color.webp":  ["#3250EB", "#773BCD", "#BD26AF"],
+  "a3909_eq_image_spokenword_color.webp":    ["#29DADE", "#28C0EA", "#26A5F7"],
+  "a3909_eq_image_treblebooster_color.webp": ["#D82E4C", "#AB2477", "#7E1BA2"],
+  "a3909_eq_image_treblereducer_color.webp": ["#8D79C1", "#626FC6", "#3866CA"],
+  "a3909_eq_image_vocalbooster_color.webp":  ["#FA8631", "#F06732", "#E54834"]
+};
+
+function presetGradient(preset) {
+  const stops = PRESET_GRADIENT_BY_COLOR_ASSET[preset?.img_color];
+  if (!stops) return "linear-gradient(120deg, #34c759 0%, #17d2a3 100%)";
+  return `linear-gradient(120deg, ${stops[0]} 0%, ${stops[1]} 55%, ${stops[2]} 100%)`;
+}
+
 async function selectPreset(id) {
   state.eq = id;
   const p = EQ_PRESETS.find(p => p.id === id) || EQ_PRESETS[0];
-  if (refs.eqSubtitle) refs.eqSubtitle.textContent = p?.name || "soundcore Signature";
+  if (refs.eqSubtitle) refs.eqSubtitle.textContent = p?.name || "Signature";
   saveState();
   renderSoundEffects();
   renderAllPresets();
@@ -196,7 +231,7 @@ async function selectPreset(id) {
 }
 
 function renderSoundEffects() {
-  refs.soundEffectsScreen.style.display = state.soundEffectsOpen ? "" : "none";
+  setViewOpen(refs.soundEffectsScreen, state.soundEffectsOpen);
   if (!state.soundEffectsOpen) return;
 
   const preset = EQ_PRESETS.find(p => p.id === state.eq) || EQ_PRESETS[0];
@@ -221,12 +256,11 @@ function renderSoundEffects() {
   const sub = $("ceqNavSub");
   if (sub) sub.textContent = activeCustom?.name || "Custom";
 
-  // Chips — first 5 presets, each with its color image as background
+  // Chips — first 5 presets, text-only (no branded image assets)
   const CHIP_LIMIT = 5;
   refs.sePresetChips.innerHTML = getOrderedPresets().slice(0, CHIP_LIMIT).map(p => {
     const active = p.id === state.eq;
-    return `<button class="se-chip${active ? ' active' : ''}" data-id="${p.id}"
-      style="background-image:url('./assets/eq/${p.img_color}')">${p.name}</button>`;
+    return `<button class="se-chip${active ? ' active' : ''}" data-id="${p.id}" style="background-image:${presetGradient(p)}">${p.name}</button>`;
   }).join("") + `<button class="se-chip more-btn" data-action="more">More &rsaquo;</button>`;
 
   refs.sePresetChips.onclick = e => {
@@ -247,7 +281,7 @@ function getOrderedPresets() {
 }
 
 function renderAllPresets() {
-  refs.allPresetsScreen.style.display = state.allPresetsOpen ? "" : "none";
+  setViewOpen(refs.allPresetsScreen, state.allPresetsOpen);
   if (!state.allPresetsOpen) return;
 
   const ordered = getOrderedPresets();
@@ -257,12 +291,13 @@ function renderAllPresets() {
 
   function rowHTML(p) {
     const active = p.id === state.eq;
+    const signatureClass = p.id === 0 ? " signature-flatline" : "";
     const check = active
       ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`
       : '';
-    return `<div class="ap-row" data-id="${p.id}" draggable="false">
+    return `<div class="ap-row${signatureClass}" data-id="${p.id}" draggable="false">
       <div class="ap-check">${check}</div>
-      <img class="ap-thumb" src="./assets/eq/${p.img_color}" alt="">
+      <div class="ap-thumb-wrap" style="background-image:${presetGradient(p)}"><i data-lucide="audio-lines"></i></div>
       <span class="ap-name">${p.name}</span>
       <div class="ap-drag" data-handle="true">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -283,8 +318,6 @@ function renderAllPresets() {
     row.addEventListener("click", e => {
       if (e.target.closest("[data-handle]")) return;
       selectPreset(parseInt(row.dataset.id));
-      state.allPresetsOpen = false;
-      renderAllPresets();
     });
   });
 
@@ -348,7 +381,8 @@ const ANC_LABELS = {
 
 const DEVICE_IMAGE_MANIFEST = window.SOUNDCORE_DEVICE_IMAGE_MANIFEST || {};
 const DEVICE_NAME_ALIASES = window.SOUNDCORE_DEVICE_NAME_ALIASES || {};
-const DEVICE_IMAGE_FALLBACK = "./soundcore_logo_full.png";
+const APK_CODE_NAME_MAP = window.APK_CODE_NAME_MAP || {};
+const DEVICE_IMAGE_FALLBACK = "";
 const DEVICE_ALIAS_KEYS = Object.keys(DEVICE_NAME_ALIASES).sort((a, b) => b.length - a.length);
 
 function normalizeDeviceName(value) {
@@ -398,6 +432,12 @@ function resolveDeviceImage(device) {
   return DEVICE_IMAGE_FALLBACK;
 }
 
+function resolveDeviceVisualName(device) {
+  const code = extractModelCode(device);
+  if (code) return APK_CODE_NAME_MAP[code.toLowerCase()] || code.toUpperCase();
+  return String(device?.name || "UNKNOWN").toUpperCase();
+}
+
 // ── Persistence ───────────────────────────────────────────────────────────────
 
 function loadState() {
@@ -444,15 +484,17 @@ function saveState() {
 }
 
 function mergeDevices(base, incoming) {
+  const canonicalId = (id) => String(id || "").trim().toUpperCase();
   const map = new Map();
   (base || []).forEach(d => {
     if (!d?.id) return;
-    map.set(d.id, { ...d });
+    map.set(canonicalId(d.id), { ...d, id: canonicalId(d.id) });
   });
   (incoming || []).forEach(d => {
     if (!d?.id) return;
-    const prev = map.get(d.id) || {};
-    map.set(d.id, { ...prev, ...d });
+    const id = canonicalId(d.id);
+    const prev = map.get(id) || {};
+    map.set(id, { ...prev, ...d, id });
   });
   return Array.from(map.values());
 }
@@ -462,6 +504,17 @@ function hasAnyBatteryValue(batt) {
     batt &&
     (batt.single != null || batt.left != null || batt.right != null || batt.case != null)
   );
+}
+
+function shouldShowScanResultDevice(device) {
+  if (!device?.id) return false;
+  if (state.connectedDeviceId && device.id === state.connectedDeviceId) return false;
+  const name = String(device.name || "").trim().toLowerCase();
+  if (!name) return true;
+  if (name.includes("set up in our app")) return false;
+  if (name.includes("setup in our app")) return false;
+  if (name.includes("set up device in app")) return false;
+  return true;
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -474,7 +527,7 @@ function renderDeviceCards() {
     : state.devices;
 
   if (!sorted.length) {
-    refs.cards.innerHTML = `<p class="no-devices-msg">No devices yet — tap "Add Device" to scan.</p>`;
+    refs.cards.innerHTML = `<p class="no-devices-msg">No devices yet — tap "Add Device" to check connected devices.</p>`;
     return;
   }
 
@@ -483,7 +536,10 @@ function renderDeviceCards() {
     const isConnected = device.id === state.connectedDeviceId;
     const isConnecting = device.id === state.connectingDeviceId;
     const card = document.createElement("div");
-    card.className = "device-card" + (isActive ? " active" : "");
+    card.className =
+      "device-card" +
+      (isActive ? " active" : "") +
+      (isConnected ? " connected" : " disconnected");
     card.innerHTML = deviceCardHTML(device, isActive, isConnected, isConnecting);
     card.onclick = (e) => {
       const removeBtn = e.target.closest('[data-action="remove"]');
@@ -502,23 +558,27 @@ function renderDetail() {
   const active = state.devices.find(d => d.id === state.activeDeviceId);
 
   if (!active) {
+    setViewOpen(refs.deviceDetail, false);
     refs.noDeviceState.style.display = "";
-    refs.deviceDetail.style.display  = "none";
     return;
   }
 
   refs.noDeviceState.style.display = "none";
-  refs.deviceDetail.style.display  = "";
+  setViewOpen(refs.deviceDetail, true);
+  if (!detailFirstOpenAnimated && !supportsDiscreteDisplayTransition) {
+    detailFirstOpenAnimated = true;
+    refs.deviceDetail.classList.remove("fallback-enter");
+    requestAnimationFrame(() => refs.deviceDetail.classList.add("fallback-enter"));
+    setTimeout(() => refs.deviceDetail.classList.remove("fallback-enter"), 280);
+  }
 
   // Hero
   const name = active.name || "Unknown";
   refs.heroName.textContent = name;
-  refs.heroImg.src = resolveDeviceImage(active);
-  refs.heroImg.alt = name;
-
   // Extract numeric model number for watermark (e.g. "Liberty 5" → "5")
   const numMatch = name.match(/\d+/);
   refs.heroWatermark.textContent = numMatch ? numMatch[0] : "";
+  refs.heroWatermark.classList.add("center-only");
 
   // Hero battery
   refs.heroBattery.classList.toggle("single", isSingleBatteryDevice(active));
@@ -564,10 +624,14 @@ function renderDetail() {
   }
 
   const currentPreset = EQ_PRESETS.find(p => p.id === state.eq) || EQ_PRESETS[0];
-  refs.eqSubtitle.textContent = currentPreset?.name || "soundcore Signature";
+  refs.eqSubtitle.textContent = currentPreset?.name || "Signature";
+
 }
 
-function renderScanState() { refs.scanState.textContent = state.scanState; }
+function renderScanState() {
+  if (!refs.scanState) return;
+  refs.scanState.textContent = state.scanState;
+}
 
 function renderScanOverlay() {
   if (!refs.scanOverlay) return;
@@ -595,14 +659,19 @@ function renderScanOverlay() {
   if (mode === "found") {
     refs.scanResultsList.innerHTML = "";
     (state.scanResults || []).forEach(device => {
+      const isConnecting = device.id === state.connectingDeviceId;
+      const isBusy = Boolean(state.connectingDeviceId && state.connectingDeviceId !== device.id);
       const row = document.createElement("button");
       row.type = "button";
       row.className = "scan-result-item";
+      row.disabled = isConnecting || isBusy;
       row.innerHTML = `
-        <img class="scan-result-img" src="${resolveDeviceImage(device)}" alt="${device.name || "Unknown"}" />
+        <div class="scan-result-label">${resolveDeviceVisualName(device)}</div>
         <div class="scan-result-meta">
           <div class="scan-result-name">${device.name || "Unknown"}</div>
-          <div class="scan-result-sub">Tap to connect</div>
+          <div class="scan-result-sub${isConnecting ? " connecting" : ""}">
+            ${isConnecting ? '<span class="status-spinner" aria-hidden="true"></span>Connecting...' : "Tap to connect"}
+          </div>
         </div>
       `;
       row.onclick = async () => {
@@ -625,6 +694,9 @@ function render() {
   renderSoundEffects();
   renderAllPresets();
   renderCustomEqScreen();
+  if (window.lucide?.createIcons) {
+    window.lucide.createIcons();
+  }
 }
 
 // ── Confirm dialog ────────────────────────────────────────────────────────────
@@ -781,17 +853,17 @@ async function runDeviceScanOverlayFlow() {
       return;
     }
 
-    state.scanState = "Scanning…";
+    state.scanState = "Checking connected devices…";
     state.scanOverlayMode = "searching";
     render();
 
-    const devices = await window.soundcoreDesktop.bluetooth.scan();
-    state.scanResults = devices;
+    const devices = await window.soundcoreDesktop.bluetooth.getConnectedDevices();
+    state.scanResults = mergeDevices([], devices).filter(shouldShowScanResultDevice);
     await syncConnectedDevice({ addIfMissing: false });
-    state.scanState = `Found ${devices.length} device(s)`;
-    state.scanOverlayMode = devices.length ? "found" : "not-found";
+    state.scanState = `Found ${state.scanResults.length} connected device(s)`;
+    state.scanOverlayMode = state.scanResults.length ? "found" : "not-found";
   } catch (err) {
-    state.scanState = `Scan failed: ${err.message}`;
+    state.scanState = `Device check failed: ${err.message}`;
     state.scanOverlayMode = "not-found";
   }
 
@@ -901,18 +973,20 @@ function bindControls() {
     render();
   };
 
-  // Disconnect
-  refs.disconnectBtn.onclick = async () => {
-    try {
-      await window.soundcoreDesktop.bluetooth.disconnectSession();
-      state.connectedDeviceId = null;
-      state.connectingDeviceId = null;
-      state.activeDeviceId = null;
-      saveState();
-      state.scanState = "Disconnected";
-    } catch (err) { state.scanState = `Disconnect failed: ${err.message}`; }
-    render();
-  };
+  // Disconnect (optional UI control)
+  if (refs.disconnectBtn) {
+    refs.disconnectBtn.onclick = async () => {
+      try {
+        await window.soundcoreDesktop.bluetooth.disconnectSession();
+        state.connectedDeviceId = null;
+        state.connectingDeviceId = null;
+        state.activeDeviceId = null;
+        saveState();
+        state.scanState = "Disconnected";
+      } catch (err) { state.scanState = `Disconnect failed: ${err.message}`; }
+      render();
+    };
+  }
 
   // Back button (deselect device on mobile / narrow)
   if (refs.backBtn) {
@@ -1171,7 +1245,7 @@ function renderCustomEqScreen() {
   const screen = $("customEqScreen");
   if (!screen) return;
 
-  screen.style.display = state.customEqOpen ? "" : "none";
+  setViewOpen(screen, state.customEqOpen);
   if (!state.customEqOpen) return;
 
   ceqBuildGrid();

@@ -7,13 +7,20 @@ const ble = new BluezBackend();
 let win = null;
 
 function createWindow() {
+  const windowIcon =
+    process.platform === 'win32'
+      ? path.join(__dirname, 'renderer', 'assets', 'windows-icons', 'icon.ico')
+      : process.platform === 'linux'
+        ? path.join(__dirname, 'renderer', 'assets', 'linux-icons', '256x256.png')
+        : undefined;
   win = new BrowserWindow({
     width: 1100,
     height: 760,
     minWidth: 720,
     minHeight: 600,
     backgroundColor: '#000000',
-    title: 'Soundcore PC',
+    title: 'CoreSound',
+    icon: windowIcon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -30,6 +37,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('ble:get-state', () => ble.getState());
   ipcMain.handle('ble:scan', async () => ble.scan());
+  ipcMain.handle('ble:get-connected-devices', async () => ble.getConnectedDevices());
   ipcMain.handle('ble:connect', async (_e, deviceId) => ble.connect(deviceId));
   ipcMain.handle('ble:disconnect-session', async () => ble.disconnectSession());
   ipcMain.handle('ble:disconnect', async () => ble.disconnect());
