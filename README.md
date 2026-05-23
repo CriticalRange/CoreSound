@@ -29,7 +29,9 @@ CoreSound is an open-source desktop companion app for Soundcore/Anker Bluetooth 
 
 ## Installation
 
-**Windows** — download the latest `.exe` installer from the [releases page](https://github.com/CriticalRange/CoreSound/releases/latest) and run it.
+**Windows**
+
+Download the latest `.exe` installer from the [releases page](https://github.com/CriticalRange/CoreSound/releases/latest) and run it.
 
 **Arch Linux / CachyOS / Manjaro (AUR)**
 ```bash
