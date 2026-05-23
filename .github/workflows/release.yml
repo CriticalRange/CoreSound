@@ -80,18 +80,12 @@ jobs:
           SHA=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
           echo "sha256=$SHA" >> $GITHUB_OUTPUT
 
-      - name: Update PKGBUILD
+      - name: Update PKGBUILD version and checksum
         run: |
           VERSION=${{ steps.version.outputs.version }}
           SHA=${{ steps.sha256.outputs.sha256 }}
           sed -i "s/^pkgver=.*/pkgver=${VERSION}/" aur/PKGBUILD
           sed -i "s/^sha256sums=.*/sha256sums=('${SHA}')/" aur/PKGBUILD
-
-      - name: Generate .SRCINFO
-        uses: nicholasgasior/action-makepkg@v1
-        with:
-          run: mksrcinfo
-          workdir: aur
 
       - name: Push to AUR
         uses: KSXGitHub/github-actions-deploy-aur@v3
@@ -102,3 +96,5 @@ jobs:
           commit_email: muhksgn@gmail.com
           ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
           commit_message: "Update to v${{ steps.version.outputs.version }}"
+          allow_empty_commits: false
+          force_push: false
