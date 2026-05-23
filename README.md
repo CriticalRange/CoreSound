@@ -8,6 +8,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/CriticalRange/CoreSound)](https://github.com/CriticalRange/CoreSound/commits/main)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey)]()
+[![AUR version](https://img.shields.io/aur/version/coresound-bin)](https://aur.archlinux.org/packages/coresound-bin)
 
 </td>
 </tr></table>
@@ -25,6 +26,15 @@ CoreSound is an open-source desktop companion app for Soundcore/Anker Bluetooth 
 - Multipoint connection support
 - Device capability detection per model
 - Local settings persistence
+
+## Installation
+
+**Arch Linux / CachyOS / Manjaro (AUR)**
+```bash
+yay -S coresound-bin
+```
+
+**Other Linux / Windows** — download the latest AppImage or zip from the [releases page](https://github.com/CriticalRange/CoreSound/releases/latest).
 
 ## Requirements
 
