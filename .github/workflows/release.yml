@@ -57,7 +57,7 @@ jobs:
       - name: Upload Windows zip
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
