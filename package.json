@@ -21,6 +21,7 @@
   "build": {
     "appId": "com.coresound.desktop",
     "productName": "CoreSound",
+    "publish": null,
     "files": [
       "src/**/*",
       "package.json"
