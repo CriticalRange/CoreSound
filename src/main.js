@@ -1,7 +1,11 @@
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 const { BluezBackend } = require('./bluez-backend');
 const { buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand } = require('./soundcore-protocol');
+
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
 
 const ble = new BluezBackend();
 let win = null;
@@ -81,6 +85,21 @@ app.whenReady().then(() => {
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+
+  // Check for updates after window is ready
+  app.on('browser-window-created', (_, w) => {
+    w.webContents.once('did-finish-load', () => {
+      autoUpdater.checkForUpdates().catch(() => {});
+    });
+  });
+
+  autoUpdater.on('update-available', (info) => {
+    if (win) win.webContents.send('update-available', info.version);
+  });
+
+  ipcMain.handle('updater:download', () => {
+    shell.openExternal('https://github.com/CriticalRange/CoreSound/releases/latest');
   });
 });
 

@@ -21,5 +21,9 @@ contextBridge.exposeInMainWorld("coresound", {
     onBattery:      (cb) => ipcRenderer.on("battery-update", (_, d) => cb(d)),
     onModeUpdate:   (cb) => ipcRenderer.on("mode-update",    (_, d) => cb(d)),
     openBtSettings: ()   => ipcRenderer.invoke("shell:open-bt-settings"),
+  },
+  updater: {
+    onUpdateAvailable: (cb) => ipcRenderer.on("update-available", (_, version) => cb(version)),
+    downloadUpdate: () => ipcRenderer.invoke("updater:download"),
   }
 });

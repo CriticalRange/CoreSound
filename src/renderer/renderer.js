@@ -1370,3 +1370,19 @@ window.coresound.bluetooth.onModeUpdate(({ mode, ancScene, windEnabled }) => {
   state.windEnabled = windEnabled;
   saveState(); render();
 });
+
+window.coresound.updater.onUpdateAvailable((version) => {
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.innerHTML = `
+    <span>Update available: v${version}</span>
+    <button id="updateGoBtn">Download</button>
+    <button id="updateDismissBtn">Dismiss</button>
+  `;
+  document.body.appendChild(banner);
+  document.getElementById('updateGoBtn').onclick = () => {
+    window.coresound.updater.downloadUpdate();
+    banner.remove();
+  };
+  document.getElementById('updateDismissBtn').onclick = () => banner.remove();
+});

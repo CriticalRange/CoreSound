@@ -1797,3 +1797,36 @@ body {
   border-radius: 10px;
   border: none;
 }
+
+/* ── Update banner ───────────────────────────────── */
+#update-banner {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  border: 1px solid #2ecc71;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 13px;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+#update-banner button {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#updateGoBtn {
+  background: #2ecc71;
+  color: #000;
+}
+#updateDismissBtn {
+  background: #333;
+  color: #aaa;
+}
