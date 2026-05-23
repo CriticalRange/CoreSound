@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Build AppImage
-        run: DEBUG=electron-builder npx electron-builder --linux --publish never
+        run: npx electron-builder --linux --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
         run: npm install
 
       - name: Build Windows zip
-        run: DEBUG=electron-builder npx electron-builder --win --publish never
+        run: npx electron-builder --win --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
