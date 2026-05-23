@@ -7,7 +7,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/CriticalRange/CoreSound?label=latest%20release)](https://github.com/CriticalRange/CoreSound/releases/latest)
 [![GitHub last commit](https://img.shields.io/github/last-commit/CriticalRange/CoreSound)](https://github.com/CriticalRange/CoreSound/commits/main)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey)]()
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey)](https://github.com/CriticalRange/CoreSound/releases/latest)
 [![AUR version](https://img.shields.io/aur/version/coresound-bin)](https://aur.archlinux.org/packages/coresound-bin)
 
 </td>
