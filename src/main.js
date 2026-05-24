@@ -1,10 +1,16 @@
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
-const { autoUpdater } = require('electron-updater');
 const { buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand } = require('./device-protocol');
 
-autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = false;
+// Store builds set isStoreBuild=true via electron-builder extraMetadata.
+// The MS Store manages updates itself, so electron-updater is disabled there.
+const isStoreBuild = Boolean(require('../package.json').isStoreBuild);
+let autoUpdater = null;
+if (!isStoreBuild) {
+  autoUpdater = require('electron-updater').autoUpdater;
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+}
 
 const ble = process.platform === 'win32'
   ? new (require('./windows-backend').WindowsBackend)()
@@ -94,16 +100,16 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  // Check for updates after window is ready
-  app.on('browser-window-created', (_, w) => {
-    w.webContents.once('did-finish-load', () => {
-      autoUpdater.checkForUpdates().catch(() => {});
+  if (!isStoreBuild && autoUpdater) {
+    app.on('browser-window-created', (_, w) => {
+      w.webContents.once('did-finish-load', () => {
+        autoUpdater.checkForUpdates().catch(() => {});
+      });
     });
-  });
-
-  autoUpdater.on('update-available', (info) => {
-    if (win) win.webContents.send('update-available', info.version);
-  });
+    autoUpdater.on('update-available', (info) => {
+      if (win) win.webContents.send('update-available', info.version);
+    });
+  }
 
   ipcMain.handle('updater:download', () => {
     shell.openExternal('https://github.com/CriticalRange/CoreSound/releases/latest');

@@ -44,6 +44,43 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  build-store:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile RFCOMM helper to standalone exe
+        run: pip install pyinstaller && pyinstaller --onefile --distpath src --name rfcomm-helper src/rfcomm-helper.py
+
+      - name: Build Store MSIX
+        run: npm run dist:win:store
+
+      # Submission requires 5 GitHub secrets — safe to skip until secrets are added.
+      # Set them in: GitHub repo → Settings → Secrets and variables → Actions
+      #   STORE_SELLER_ID   — Partner Center → Account settings → Account info (numeric ID)
+      #   STORE_PRODUCT_ID  — Partner Center → Your app → Product identity (9N... format)
+      #   STORE_TENANT_ID   — Azure Portal → Azure Active Directory → Tenant ID
+      #   STORE_CLIENT_ID   — Azure Portal → App registrations → your app → Client ID
+      #   STORE_CLIENT_SECRET — Azure Portal → App registrations → Certificates & secrets
+      - name: Submit to Microsoft Store
+        uses: wdzeng/windows-store-action@v1
+        continue-on-error: true
+        with:
+          seller-id: ${{ secrets.STORE_SELLER_ID }}
+          product-id: ${{ secrets.STORE_PRODUCT_ID }}
+          tenant-id: ${{ secrets.STORE_TENANT_ID }}
+          client-id: ${{ secrets.STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
+          msix-path: dist/*.appx
+
   publish-aur:
     runs-on: ubuntu-latest
     needs: build-linux

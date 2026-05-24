@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "dist:linux": "electron-builder --linux",
-    "dist:win": "electron-builder --win"
+    "dist:win": "electron-builder --win",
+    "dist:win:store": "electron-builder --win --config.win.target=appx --config.extraMetadata.isStoreBuild=true --config.publish=never"
   },
   "author": "CriticalRange",
   "license": "GPL-3.0-only",
@@ -33,7 +34,8 @@
       "package.json"
     ],
     "asarUnpack": [
-      "src/rfcomm-helper.py"
+      "src/rfcomm-helper.py",
+      "src/rfcomm-helper.exe"
     ],
     "win": {
       "target": [
@@ -62,6 +64,16 @@
       "oneClick": true,
       "perMachine": false,
       "createDesktopShortcut": true
+    },
+    "appx": {
+      "displayName": "CoreSound",
+      "publisherDisplayName": "CriticalRange",
+      "identityName": "PLACEHOLDER.CoreSound",
+      "publisher": "CN=PLACEHOLDER",
+      "applicationId": "CoreSound",
+      "backgroundColor": "#000000",
+      "languages": ["en-US"],
+      "addAutoLaunchExtension": false
     }
   }
 }
