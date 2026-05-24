@@ -20,6 +20,8 @@ contextBridge.exposeInMainWorld("coresound", {
     getBattery: () => ipcRenderer.invoke("ble:get-battery"),
     onBattery:      (cb) => ipcRenderer.on("battery-update", (_, d) => cb(d)),
     onModeUpdate:   (cb) => ipcRenderer.on("mode-update",    (_, d) => cb(d)),
+    onDeviceInfo:   (cb) => ipcRenderer.on("device-info",    (_, d) => cb(d)),
+    getDeviceInfo:  ()   => ipcRenderer.invoke("ble:get-device-info"),
     openBtSettings: ()   => ipcRenderer.invoke("shell:open-bt-settings"),
   },
   updater: {

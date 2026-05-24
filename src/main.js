@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-const { buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand } = require('./soundcore-protocol');
+const { buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand } = require('./device-protocol');
 
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
@@ -34,8 +34,9 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
 
-ble.on('battery', batteryData => { if (win) win.webContents.send('battery-update', batteryData); });
-ble.on('mode',    modeData => { if (win) win.webContents.send('mode-update', modeData); });
+ble.on('battery',     batteryData => { if (win) win.webContents.send('battery-update', batteryData); });
+ble.on('mode',        modeData    => { if (win) win.webContents.send('mode-update', modeData); });
+ble.on('device-info', infoData    => { if (win) win.webContents.send('device-info', infoData); });
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
@@ -58,7 +59,8 @@ app.whenReady().then(() => {
     return ble.write(cmd.toString('hex'));
   });
 
-  ipcMain.handle('ble:get-battery', () => ble.getBattery());
+  ipcMain.handle('ble:get-battery',      () => ble.getBattery());
+  ipcMain.handle('ble:get-device-info',  () => ble.getDeviceInfo());
   ipcMain.handle('shell:open-bt-settings', () => {
     const { exec } = require('child_process');
     if (process.platform === 'win32') {

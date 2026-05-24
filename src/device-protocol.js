@@ -277,8 +277,37 @@ function buildCustomEqCommand(bands) {
   return buildCommand(0x03, 0x87, buf);
 }
 
+// Parse the firmware/model/MAC string from the cat=01 type=01 device-info response.
+// The response contains a 31-byte ASCII block: <fw:5><fw:5><modelNum:4><mac:12><hwRev:5>
+// Example: "04.9004.9039577CE9135E50D400.00"
+//          fw=04.90 fw=04.90 model=3957 mac=7CE9135E50D4 hw=00.00
+function extractDeviceInfo(payload) {
+  if (!payload || payload.length < 37) return null;
+  for (let start = 0; start + 30 < payload.length; start++) {
+    let ok = true;
+    for (let i = start; i < start + 31; i++) {
+      if (payload[i] < 0x20 || payload[i] >= 0x7F) { ok = false; break; }
+    }
+    if (!ok) continue;
+    const str = payload.slice(start, start + 31).toString('ascii');
+    if (!/^\d{2}\.\d{2}/.test(str)) continue;                       // must start with fw version
+    const modelNum = str.slice(10, 14);
+    const macRaw   = str.slice(14, 26);
+    if (!/^[0-9a-fA-F]{4}$/.test(modelNum)) continue;
+    if (!/^[0-9a-fA-F]{12}$/.test(macRaw))  continue;
+    return {
+      firmwareLeft:  str.slice(0, 5),
+      firmwareRight: str.slice(5, 10),
+      modelNum:      modelNum.toLowerCase(),
+      mac:           macRaw.match(/.{2}/g).join(':').toUpperCase(),
+      hardwareRev:   str.slice(26, 31),
+    };
+  }
+  return null;
+}
+
 module.exports = {
   buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand, buildDeviceInfoQuery,
-  parseSoundcoreFrames, extractBattery, extractMode,
+  parseSoundcoreFrames, extractBattery, extractMode, extractDeviceInfo,
   RFCOMM_CHANNEL, ANC_SCENES, TRANSPARENCY_SCENES, MODES_REVERSE
 };

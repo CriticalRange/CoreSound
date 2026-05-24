@@ -459,6 +459,7 @@ function loadState() {
           id: d.id,
           name: d.name || "Unknown",
           formFactor: d.formFactor || null,
+          modelCode: d.modelCode || null,
           battery: null
         }));
     }
@@ -478,7 +479,8 @@ function saveState() {
     devices: state.devices.map(d => ({
       id: d.id,
       name: d.name || "Unknown",
-      formFactor: d.formFactor || null
+      formFactor: d.formFactor || null,
+      modelCode: d.modelCode || null,
     }))
   }));
 }
@@ -1369,6 +1371,17 @@ window.coresound.bluetooth.onModeUpdate(({ mode, ancScene, windEnabled }) => {
   state.ancScene = ancScene;
   state.windEnabled = windEnabled;
   saveState(); render();
+});
+
+window.coresound.bluetooth.onDeviceInfo(({ deviceId, modelNum }) => {
+  if (!deviceId || !modelNum) return;
+  // Resolve full model code by trying known prefixes against the manifest
+  const code = ['a', 'd', 'z'].map(p => p + modelNum).find(c => DEVICE_IMAGE_MANIFEST[c]) || ('a' + modelNum);
+  state.devices = state.devices.map(d =>
+    d.id === deviceId ? { ...d, modelCode: code } : d
+  );
+  saveState();
+  render();
 });
 
 window.coresound.updater.onUpdateAvailable((version) => {

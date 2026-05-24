@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const { EventEmitter } = require('events');
-const { buildDeviceInfoQuery, parseSoundcoreFrames, extractBattery, extractMode } = require('./soundcore-protocol');
+const { buildDeviceInfoQuery, parseSoundcoreFrames, extractBattery, extractMode, extractDeviceInfo } = require('./device-protocol');
 
 function resolveUnpacked(filePath) {
   return filePath.replace('app.asar', 'app.asar.unpacked');
@@ -42,6 +42,7 @@ class WindowsBackend extends EventEmitter {
     this._lastProtocolFrameAt = 0;
     this._legacyBatteryPollInFlight = false;
     this._legacyBatteryChannel = 17;
+    this._deviceInfoCache = null;
   }
 
   async getState() {
@@ -376,6 +377,12 @@ class WindowsBackend extends EventEmitter {
       console.log('[soundcore] device ready signal, sending info query');
       this._requestDeviceInfo(true);
     } else if (cat === 0x01 && type === 0x01) {
+      const info = extractDeviceInfo(payload);
+      if (info && !this._deviceInfoCache) {
+        this._deviceInfoCache = info;
+        console.log(`[device-info] model=${info.modelNum} fw=${info.firmwareLeft}/${info.firmwareRight} mac=${info.mac} hw=${info.hardwareRev}`);
+        this.emit('device-info', { deviceId: this.connectedDeviceId, ...info });
+      }
       const batt = extractBattery(payload);
       if (batt) {
         const normalized = this._normalizeBattery(batt);
@@ -436,9 +443,14 @@ class WindowsBackend extends EventEmitter {
     this.connectedDeviceId = null;
     this._batteryCache = null;
     this._modeCache = null;
+    this._deviceInfoCache = null;
     this._lastInfoQueryAt = 0;
     this._rxBuffer = Buffer.alloc(0);
     return { disconnected: Boolean(id), id };
+  }
+
+  getDeviceInfo() {
+    return this._deviceInfoCache;
   }
 
   async disconnect() {

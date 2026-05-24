@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
 function resolveUnpacked(filePath) {
   return filePath.replace('app.asar', 'app.asar.unpacked');
 }
-const { buildDeviceInfoQuery, parseSoundcoreFrames, extractMode } = require('./soundcore-protocol');
+const { buildDeviceInfoQuery, parseSoundcoreFrames, extractMode, extractDeviceInfo } = require('./device-protocol');
 
 function variantValue(v, fallback = null) {
   if (!v || typeof v !== 'object' || !('value' in v)) return fallback;
@@ -46,6 +46,7 @@ class BluezBackend extends EventEmitter {
     this._lastProtocolFrameAt = 0;
     this._legacyBatteryPollInFlight = false;
     this._legacyBatteryChannel = 17;
+    this._deviceInfoCache = null;
   }
 
   async _rootManager() {
@@ -568,10 +569,15 @@ class BluezBackend extends EventEmitter {
     this.connectedDeviceId = null;
     this._batteryCache = null;
     this._modeCache = null;
+    this._deviceInfoCache = null;
     this._lastInfoQueryAt = 0;
     this._rxBuffer = Buffer.alloc(0);
     await this._refreshDevices();
     return { disconnected: Boolean(id), id };
+  }
+
+  getDeviceInfo() {
+    return this._deviceInfoCache;
   }
 
   async disconnect() {
@@ -620,9 +626,15 @@ class BluezBackend extends EventEmitter {
     console.log(`[soundcore] frame 0x${c}:0x${t} len=${payload.length}`);
 
     if (cat === 0x01 && type === 0x7F) {
-      // Device ready — now safe to request device info
       console.log('[soundcore] device ready signal, sending info query');
       this._requestDeviceInfo(true);
+    } else if (cat === 0x01 && type === 0x01) {
+      const info = extractDeviceInfo(payload);
+      if (info && !this._deviceInfoCache) {
+        this._deviceInfoCache = info;
+        console.log(`[device-info] model=${info.modelNum} fw=${info.firmwareLeft}/${info.firmwareRight} mac=${info.mac} hw=${info.hardwareRev}`);
+        this.emit('device-info', { deviceId: this.connectedDeviceId, ...info });
+      }
     } else if (cat === 0x06 && type === 0x01) {
       const mode = extractMode(payload);
       if (mode) { this._modeCache = mode; this.emit('mode', mode); }
