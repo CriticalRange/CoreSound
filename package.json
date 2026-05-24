@@ -1,6 +1,6 @@
 {
   "name": "coresound-desktop",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Desktop Bluetooth audio controller",
   "main": "src/main.js",
   "scripts": {
