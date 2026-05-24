@@ -1100,7 +1100,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-2) transparent;
 }
+.se-scroll::-webkit-scrollbar { width: 4px; }
+.se-scroll::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 2px; }
 
 .se-card {
   background: var(--surface);

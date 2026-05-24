@@ -1,13 +1,14 @@
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-const { BluezBackend } = require('./bluez-backend');
 const { buildModeCommand, buildEqCommand, buildCustomEqCommand, buildDolbyCommand } = require('./soundcore-protocol');
 
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
-const ble = new BluezBackend();
+const ble = process.platform === 'win32'
+  ? new (require('./windows-backend').WindowsBackend)()
+  : new (require('./bluez-backend').BluezBackend)();
 let win = null;
 
 function createWindow() {
@@ -60,7 +61,11 @@ app.whenReady().then(() => {
   ipcMain.handle('ble:get-battery', () => ble.getBattery());
   ipcMain.handle('shell:open-bt-settings', () => {
     const { exec } = require('child_process');
-    exec('kcmshell6 kcm_bluetooth || kcmshell5 kcm_bluetooth || gnome-control-center bluetooth');
+    if (process.platform === 'win32') {
+      exec('start ms-settings:bluetooth');
+    } else {
+      exec('kcmshell6 kcm_bluetooth || kcmshell5 kcm_bluetooth || gnome-control-center bluetooth');
+    }
   });
 
   // Profile stubs — kept so renderer doesn't throw on load

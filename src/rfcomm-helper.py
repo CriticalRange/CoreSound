@@ -5,7 +5,7 @@ Messages in:  {"type": "write", "hex": "aabbcc"}  |  {"type": "close"}
 Messages out: {"type": "connected"}  |  {"type": "data", "hex": "..."}
               {"type": "disconnected"}  |  {"type": "error", "message": "..."}
 """
-import socket, sys, json, select, errno, traceback
+import socket, sys, json, threading, queue, traceback
 
 def send(obj):
     print(json.dumps(obj), flush=True)
@@ -26,7 +26,7 @@ def main():
         sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
         sock.settimeout(10)
         sock.connect((mac, channel))
-        sock.setblocking(False)
+        sock.settimeout(None)
     except OSError as e:
         log(f"connect failed: {e}")
         send({"type": "error", "message": str(e)})
@@ -35,63 +35,70 @@ def main():
     log("connected")
     send({"type": "connected"})
 
-    stdin_fd = sys.stdin.fileno()
+    cmd_queue = queue.Queue()
+    stop_event = threading.Event()
 
-    while True:
+    def stdin_reader():
         try:
-            readable, _, exceptional = select.select([sock, stdin_fd], [], [sock], 5.0)
-        except Exception as e:
-            log(f"select error: {e}\n{traceback.format_exc()}")
-            break
+            for line in sys.stdin:
+                if stop_event.is_set():
+                    break
+                cmd_queue.put(line)
+        except Exception:
+            pass
+        cmd_queue.put(None)
 
-        if exceptional:
-            log("socket exceptional condition")
-            send({"type": "disconnected"})
-            break
-
-        for fd in readable:
-            if fd is sock:
-                try:
-                    data = sock.recv(1024)
-                    if not data:
-                        log("remote closed connection")
-                        send({"type": "disconnected"})
-                        sock.close()
-                        return
-                    log(f"rx {len(data)}b: {data.hex()}")
-                    send({"type": "data", "hex": data.hex()})
-                except OSError as e:
-                    if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-                        log(f"recv error: {e}")
-                        send({"type": "disconnected"})
-                        sock.close()
-                        return
-            elif fd == stdin_fd:
-                line = sys.stdin.readline()
-                if not line:
-                    log("stdin EOF — closing")
-                    sock.close()
-                    return
-                try:
-                    msg = json.loads(line.strip())
-                    if msg.get("type") == "write":
-                        raw = bytes.fromhex(msg["hex"])
-                        log(f"tx {len(raw)}b: {msg['hex']}")
-                        sock.send(raw)
-                    elif msg.get("type") == "close":
-                        log("close requested")
-                        sock.close()
-                        return
-                except (json.JSONDecodeError, KeyError, ValueError) as e:
-                    log(f"bad stdin message: {e}")
-                except OSError as e:
-                    log(f"send error: {e}")
+    def sock_reader():
+        try:
+            while not stop_event.is_set():
+                data = sock.recv(1024)
+                if not data:
+                    log("remote closed connection")
                     send({"type": "disconnected"})
-                    sock.close()
+                    cmd_queue.put(None)
                     return
+                log(f"rx {len(data)}b: {data.hex()}")
+                send({"type": "data", "hex": data.hex()})
+        except OSError as e:
+            if not stop_event.is_set():
+                log(f"recv error: {e}")
+                send({"type": "disconnected"})
+                cmd_queue.put(None)
+        except Exception as e:
+            if not stop_event.is_set():
+                log(f"sock_reader error: {e}\n{traceback.format_exc()}")
+
+    threading.Thread(target=stdin_reader, daemon=True).start()
+    threading.Thread(target=sock_reader, daemon=True).start()
+
+    try:
+        while True:
+            item = cmd_queue.get()
+            if item is None:
+                break
+            try:
+                msg = json.loads(item.strip())
+                if msg.get("type") == "write":
+                    raw = bytes.fromhex(msg["hex"])
+                    log(f"tx {len(raw)}b: {msg['hex']}")
+                    sock.send(raw)
+                elif msg.get("type") == "close":
+                    log("close requested")
+                    break
+            except (json.JSONDecodeError, KeyError, ValueError) as e:
+                log(f"bad stdin message: {e}")
+            except OSError as e:
+                log(f"send error: {e}")
+                send({"type": "disconnected"})
+                break
+    finally:
+        stop_event.set()
+        try:
+            sock.close()
+        except Exception:
+            pass
 
     log("loop exited")
-    sock.close()
 
 if __name__ == "__main__":
     main()
