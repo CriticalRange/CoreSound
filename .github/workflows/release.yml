@@ -62,6 +62,7 @@ jobs:
 
       - name: Build Store MSIX
         run: npm run dist:win:store
+        # Note: dist:win:store uses --publish never so no GH_TOKEN needed here
 
       # Submission requires 5 GitHub secrets — safe to skip until secrets are added.
       # Set them in: GitHub repo → Settings → Secrets and variables → Actions
