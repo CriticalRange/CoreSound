@@ -7,14 +7,6 @@ function resolveUnpacked(filePath) {
   return filePath.replace('app.asar', 'app.asar.unpacked');
 }
 
-// Store builds ship rfcomm-helper.exe (PyInstaller-compiled, no Python dependency).
-// GitHub/dev builds use the Python script directly.
-function resolveHelper() {
-  const exePath = resolveUnpacked(path.join(__dirname, 'rfcomm-helper.exe'));
-  if (require('fs').existsSync(exePath)) return { cmd: exePath, args: [] };
-  return { cmd: 'python', args: [resolveUnpacked(path.join(__dirname, 'rfcomm-helper.py'))] };
-}
-
 function normalizeDeviceId(id = '') {
   return String(id).trim().toUpperCase();
 }
@@ -139,8 +131,8 @@ class WindowsBackend extends EventEmitter {
 
   _openRfcomm(mac, channel = 15) {
     return new Promise((resolve, reject) => {
-      const { cmd, args } = resolveHelper();
-      const proc = spawn(cmd, [...args, mac, String(channel)], {
+      const helperPath = resolveUnpacked(path.join(__dirname, 'rfcomm-helper.py'));
+      const proc = spawn('python', [helperPath, mac, String(channel)], {
         stdio: ['pipe', 'pipe', 'pipe']
       });
 
@@ -299,8 +291,8 @@ class WindowsBackend extends EventEmitter {
     const channel = this._legacyBatteryChannel;
 
     try {
-      const { cmd, args } = resolveHelper();
-      const proc = spawn(cmd, [...args, mac, String(channel)], {
+      const helperPath = resolveUnpacked(path.join(__dirname, 'rfcomm-helper.py'));
+      const proc = spawn('python', [helperPath, mac, String(channel)], {
         stdio: ['pipe', 'pipe', 'pipe']
       });
 
