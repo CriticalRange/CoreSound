@@ -1,4 +1,4 @@
-name: Build and Upload Release
+name: Build and Publish Release
 
 on:
   release:
@@ -21,19 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build AppImage
-        run: npx electron-builder --linux --publish never
+      - name: Build and publish AppImage
+        run: npx electron-builder --linux --publish always
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Upload AppImage
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*.AppImage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
     runs-on: windows-latest
@@ -48,19 +39,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Windows zip
-        run: npx electron-builder --win --publish never
+      - name: Build and publish Windows installer
+        run: npx electron-builder --win --publish always
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Upload Windows zip
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-aur:
     runs-on: ubuntu-latest
